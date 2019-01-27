@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QSerialPort>
+#include "packet.h"
 
 namespace Ui {
 class Dialog;
@@ -26,6 +27,8 @@ private:
     QSerialPort *mSerialPort;
     QString portName;
     bool mIsOpen;
+    bool mFirstOpen;
+    packet_desc_t mPacket;
 };
 
 #endif // DIALOG_H
