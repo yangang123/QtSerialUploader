@@ -12,8 +12,13 @@ Dialog::Dialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts())
-        ui->serial_box->addItem(info.portName());
+    foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts()) {
+        QString serialPortItemName = info.manufacturer();
+        serialPortItemName.append('(');
+        serialPortItemName += info.portName();
+        serialPortItemName.append(')');
+        ui->serial_box->addItem(serialPortItemName);
+    }
 
     memset((void*)&mPacket, 0x00, (size_t)sizeof(packet_desc_t));
 }
