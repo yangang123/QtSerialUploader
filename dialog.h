@@ -43,7 +43,7 @@ class Dialog : public QDialog
 public:
     explicit Dialog(QWidget *parent = 0);
     ~Dialog();
-    int send_file(char *name);
+    int send_file(void);
 
 private slots:
     void on_open_button_clicked();
@@ -51,6 +51,14 @@ private slots:
     void on_read_version_button_clicked();
 
     void on_update_firmware_button_clicked();
+
+    void on_test_button_clicked();
+    void send_onepakcet(char*p, qint16 len);
+    void on_test_button_2_clicked();
+
+    void on_test_button_3_clicked();
+
+    void on_test_button_4_clicked();
 
 private:
     Ui::Dialog *ui;
@@ -60,6 +68,9 @@ private:
     bool mFirstOpen;
     packet_desc_t mPacket;
     MasterThread mThread;
+    QByteArray buffer_read;
+    qint16 last_packet;
+
 
 //    int _fd = -1;
 //    uint8_t buf[128];

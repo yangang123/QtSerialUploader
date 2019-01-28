@@ -40,9 +40,9 @@
 #define FW_PAKET_TAIL_LEN   4    
 #define FW_PAKET_HEAD_LEN   7    
 #define FW_PAKET_BUF_SIZE   200   
-#define IAP_CONFIG_PACKET_BUFSIZE 		      256
+#define IAP_CONFIG_PACKET_BUFSIZE 		      600
 
-#define IAP_FW_DATA_LEN  128
+#define IAP_FW_DATA_LEN  512
  enum {
      FW_UPDATE_REQ           =  	          1,
      FW_UPDATE_ACK	        = 	          2,
@@ -76,7 +76,7 @@ typedef struct  {
     uint8_t dest;
     uint8_t src;
     uint16_t length;
-    uint8_t data[256];
+    uint8_t data[512];
     uint16_t crc;
     uint8_t  tail0;
     uint8_t  tail1;
@@ -107,7 +107,7 @@ typedef struct {
 #pragma pack(pop)
 
 int packet_creat_address(uint8_t src, uint8_t dest);
-void pakect_send(uint8_t cmd, uint8_t *playload, uint16_t length, uint8_t *buf, uint8_t *new_len);
+void pakect_send(uint8_t cmd, uint8_t *playload, uint16_t length, uint8_t *buf, uint16_t *new_len);
 bool packet_parse_data_callback(char data_char, packet_desc_t *packet);
 
 #ifdef __cplusplus

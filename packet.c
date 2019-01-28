@@ -27,7 +27,7 @@ int packet_creat_address(uint8_t src, uint8_t dest)
 	return 0;
 }
 
-void pakect_send(uint8_t cmd, uint8_t *playload, uint16_t length, uint8_t *buf, uint8_t *new_len)
+void pakect_send(uint8_t cmd, uint8_t *playload, uint16_t length, uint8_t *buf, uint16_t *new_len)
 {   	
     buf[FW_START1_POS] = FW_HEAD_BYTE_1;
     buf[FW_START2_POS] = FW_HEAD_BYTE_2;

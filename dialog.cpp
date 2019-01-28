@@ -21,7 +21,7 @@ void MasterThread::set_cmd(const QString &s)
 {
     if (s == "sleep") {
          qDebug() << "sleep";
-         QThread::sleep(1);
+         QThread::msleep(200);
     }
 }
 
@@ -47,43 +47,9 @@ Dialog::Dialog(QWidget *parent) :
         ui->serial_box->addItem(serialPortItemName);
     }
 
-//    QString qStr = "abc";
-//    QChar *str = qStr.data();
-//    qDebug()<< qStr;
-//    qDebug()<< str;
-
-        quint8 buffer[3];
-        buffer[0] = 0x03;
-        buffer[1] = 0x00;
-        buffer[2] = 0x03;
-
-        QString output1 = QString("%1.").arg((int)buffer[0]);
-        QString output2 = QString("%1.").arg((int)buffer[1]);
-        QString output3 = QString("%1").arg((int)buffer[2]);
-        output1 +=  output2;
-        output1 +=  output3;
-
-        qDebug()<<output1;
-
-//    QByteArray a((char*)buffer, 1);
-//    QString ver1;
-//    ver1 = a.toInt(0,16);
-//    qDebug() << "ver1:" << ver1 ;
-
-//    qDebug() << "ver1 close" << ver2 ;
-//    qDebug() << "ver1 close" << ver3 ;
-
-//    3.0.3
-//    quint8 tx_len =0;
-//    pakect_send(FW_UPDATE_DATA, (quint8*)&_firmware_data,
-//                (quint16)(6+_firmware_data.block_len), (quint8*)buffer, &tx_len);
-//    QByteArray array;
-//    if (tx_len) {
-//        array = QByteArray((char*)buffer, tx_len);
-//    }
-
-
     memset((void*)&mPacket, 0x00, (size_t)sizeof(packet_desc_t));
+    memset((void*)&_firmware_data, 0x00, (size_t)sizeof(fw_packet_t));
+
 }
 
 Dialog::~Dialog()
@@ -140,40 +106,38 @@ void Dialog::on_read_version_button_clicked()
     }
 
     quint8 buffer[20];
-    quint8 tx_len =0;
+    quint16 tx_len =0;
     pakect_send(FW_UPDATE_VERREQ, (quint8*)0, 0, (quint8*)buffer, &tx_len);
     QByteArray array;
     if (tx_len) {
         array = QByteArray((char*)buffer, tx_len);
     }
     mSerialPort->write(array);
+    mSerialPort->flush();
     mThread.set_cmd("sleep");
-    if (mSerialPort->waitForReadyRead(10000)) {
+    if (mSerialPort->waitForReadyRead(2000)) {
         QByteArray responseData = mSerialPort->readAll();
         while (mSerialPort->waitForReadyRead(10))
             responseData += mSerialPort->readAll();
         qDebug() << "datasize" << responseData.size();
-        qDebug() << responseData;
         char *buf = responseData.data();
         for (quint8 i = 0; i <responseData.size(); i++ ) {
 
              if(packet_parse_data_callback(buf[i], &mPacket)) {
                  quint8 cmd = mPacket.data[0];
                  switch(cmd) {
-                 case FW_UPDATE_REQ:
-                     qDebug() << "req";
-                     break;
-
                  case FW_UPDATE_ACK:
-                     qDebug() << "ack";
+                      qDebug() << "ack";
                       break;
 
                  case FW_UPDATE_VERREPLY:
-                     QByteArray ba;
-                     ba = QByteArray((char*)&mPacket.data[1], 3);
-                     qDebug() << "ver:" << ba.toHex();
-                     ui->version_display->setText(ba.toHex());
-                     break;
+                    QString output1 = QString("%1.").arg((int)mPacket.data[1]);
+                    QString output2 = QString("%1.").arg((int)mPacket.data[2]);
+                    QString output3 = QString("%1").arg((int)mPacket.data[3]);
+                    output1 +=  output2;
+                    output1 +=  output3;
+                    ui->version_display->setText(output1);
+                    break;
                  }
              }
         }
@@ -184,114 +148,131 @@ void Dialog::on_read_version_button_clicked()
 
 void Dialog::on_update_firmware_button_clicked()
 {
-     QFileDialog *fileDialog = new QFileDialog(this);
-     if(fileDialog->exec() == QDialog::Accepted) {
-          QString path = fileDialog->selectedFiles()[0];
-          qDebug() << "path" << path;
+    if(!mIsOpen) {
+        return;
+    }
 
-//          char *path1 = "C:/Users/yangang/Desktop/qxwz_rtk_track.bin";
-           char *path1 = "C:/Users/Administrator/Desktop/qxwz_rtk_track.bin";
-          send_file(path1);
-     }
-
-//     if(!mIsOpen) {
-//         return;
-//     }
-
-//     quint8 buffer[20];
-//     quint8 tx_len =0;
-//     pakect_send(FW_UPDATE_REQ, (quint8*)0, 0, (quint8*)buffer, &tx_len);
-//     QByteArray array;
-//     if (tx_len) {
-//         array = QByteArray((char*)buffer, tx_len);
-//     }
-//     mSerialPort->write(array);
-//     if (mSerialPort->waitForReadyRead(10000)) {
-//         QByteArray responseData = mSerialPort->readAll();
-//         while (mSerialPort->waitForReadyRead(10))
-//             responseData += mSerialPort->readAll();
-//         qDebug() << "datasize" << responseData.size();
-//         qDebug() << responseData;
-//         char *buf = responseData.data();
-//         for (quint8 i = 0; i <responseData.size(); i++ ) {
-
-//              if(packet_parse_data_callback(buf[i], &mPacket)) {
-//                  quint8 cmd = mPacket.data[0];
-//                  switch(cmd) {
-//                  case FW_UPDATE_ACK:
-//                       qDebug() << "ack";
-//                       break;
-//                  }
-//              }
-//         }
-//     } else {
-//          qDebug() << "timeout";
-//     }
-
+    quint8 buffer[20];
+    quint16 tx_len =0;
+    pakect_send(FW_UPDATE_REQ, (quint8*)0, 0, (quint8*)buffer, &tx_len);
+    QByteArray array;
+    if (tx_len) {
+        array = QByteArray((char*)buffer, tx_len);
+    }
+    mSerialPort->write(array);
+    mThread.set_cmd("sleep");
+    if (mSerialPort->waitForReadyRead(3000)) {
+        QByteArray responseData = mSerialPort->readAll();
+        while (mSerialPort->waitForReadyRead(10))
+            responseData += mSerialPort->readAll();
+        qDebug() << "datasize" << responseData.size();
+        char *buf = responseData.data();
+        for (quint8 i = 0; i <responseData.size(); i++ ) {
+             if(packet_parse_data_callback(buf[i], &mPacket)) {
+                 quint8 cmd = mPacket.data[0];
+                 switch(cmd) {
+                 case FW_UPDATE_ACK:
+                      qDebug() << "ack";
+                      send_file();
+                      on_test_button_4_clicked();
+                      break;
+                 }
+             }
+        }
+    } else {
+         qDebug() << "timeout";
+    }
 
 
 }
 
-int Dialog::send_file(char *name)
+int Dialog::send_file(void)
 {
-    qDebug("File name :%s \n", name);
+    QFileDialog *fileDialog = new QFileDialog(this);
+    if(fileDialog->exec() == QDialog::Accepted) {
+           QString path = fileDialog->selectedFiles()[0];
+           qDebug() << "path" << path;
+           QFile file(path);
 
-    FILE *fp = NULL;
-    char tmp[128];
-    fp = fopen(name, "r");
-    if (NULL == fp)
-    {
-        qDebug("File:%s open fail!\n", name);
-        return -1;
+           if (file.open(QIODevice::ReadOnly) == true)
+           {
+               qDebug() << "file open ok";
+           }
+         buffer_read = file.readAll();
+         file.close();
+
+         qint64 filesize = file.size();
+        _firmware_data.total_block = (filesize+IAP_FW_DATA_LEN)/IAP_FW_DATA_LEN;
+        _firmware_data.block_len = IAP_FW_DATA_LEN;
+        _firmware_data.cur_block = 1;
+         last_packet = filesize % IAP_FW_DATA_LEN ;
+
+        qDebug() << "firmware total_block:" <<_firmware_data.total_block << "len" << _firmware_data.block_len;
+        qDebug() << "filesize:" << filesize  << "last_packet" << last_packet;
     }
 
-    fseek(fp, 0L, SEEK_END);
-    qint64 filesize = ftell(fp);
-
-    _firmware_data.total_block = (filesize+IAP_FW_DATA_LEN)/IAP_FW_DATA_LEN;
-    _firmware_data.block_len = IAP_FW_DATA_LEN;
-    qDebug() << "firmware total_block:" <<_firmware_data.total_block << "len" << _firmware_data.block_len;
-    qDebug() << "filesize:" <<filesize ;
-    fseek(fp, 0L, SEEK_SET);
-
-//    int time = 0;
-    bool finish = false;
-    _firmware_data.cur_block = 1;
-    do {
-        int cnt = fread(tmp, 1, 128, fp);
-        if (cnt < 0) {
-            qDebug("read finish: size: %dbytes, read cnt:%d, cnt:\r\n", (_firmware_data.cur_block-1)*128+cnt, _firmware_data.cur_block, cnt);
-            finish = true;
-        } else {
-            qDebug("file read len: %dbytes, read cnt:%d cnt:%d\r\n", _firmware_data.cur_block*128, _firmware_data.cur_block, cnt);
-        }
-
-        //create packet
-        memcpy(_firmware_data.data, tmp, cnt);
-        _firmware_data.block_len = cnt;
-        qDebug("total: %d, cur:%d, len:%d\r\n", _firmware_data.total_block, _firmware_data.cur_block, _firmware_data.block_len);
-//        pakect_send(0, FW_UPDATE_DATA, &_firmware_data, 6+_firmware_data.block_len);
-
-        quint8 buffer[256];
-        quint8 tx_len =0;
-        pakect_send(FW_UPDATE_DATA, (quint8*)&_firmware_data,
-                    (quint16)(6+_firmware_data.block_len), (quint8*)buffer, &tx_len);
-        QByteArray array;
-        if (tx_len) {
-            array = QByteArray((char*)buffer, tx_len);
-        }
-        mSerialPort->write(array);
-
-        _firmware_data.cur_block++;
-
-        if (finish) {
-            break;
-        }
-//        usleep(200*1000);
-        mThread.set_cmd("sleep");
-    } while(1);
-    fclose(fp);
-    fp = NULL;
-
     return 0;
+}
+
+void Dialog::send_onepakcet(char*p, qint16 len)
+{
+    if(!mIsOpen) {
+        qDebug() << "serial no open!";
+        return;
+    }
+
+    quint16 tx_len = 0;
+    char buffer_ret[IAP_CONFIG_PACKET_BUFSIZE];
+    memcpy(_firmware_data.data, p, len);
+
+    pakect_send(FW_UPDATE_DATA, (uint8_t*)&_firmware_data,
+                (quint16)(6+len), (quint8*)buffer_ret, &tx_len);
+
+    QByteArray buf = QByteArray(buffer_ret, tx_len);
+    qDebug() << "buf size" << buf.size();
+    mSerialPort->write(buf);
+    mSerialPort->flush();
+    buf.clear();
+}
+
+void Dialog::on_test_button_clicked()
+{
+    char *p = buffer_read.data();
+    char *p1 = p + (_firmware_data.cur_block-1) * 512;
+    send_onepakcet(p1, 512);
+    qDebug("total: %d, cur:%d, len:%d\r\n", _firmware_data.total_block, _firmware_data.cur_block,_firmware_data.block_len);
+    _firmware_data.cur_block++;
+    mThread.set_cmd("sleep");
+}
+
+void Dialog::on_test_button_2_clicked()
+{
+    _firmware_data.cur_block = _firmware_data.total_block;
+
+    char *p = buffer_read.data();
+    char *p1 = p + (_firmware_data.total_block-1) * 512;
+    send_onepakcet(p1, last_packet);
+    mThread.set_cmd("sleep");
+}
+
+void Dialog::on_test_button_3_clicked()
+{
+    char *p = buffer_read.data();
+
+    char *p1 = p + (_firmware_data.total_block-2) * 512;
+
+    send_onepakcet(p1, 512);
+
+    qDebug("total: %d, cur:%d, len:%d\r\n", _firmware_data.total_block, _firmware_data.cur_block,_firmware_data.block_len);
+    _firmware_data.cur_block++;
+    mThread.set_cmd("sleep");
+}
+
+void Dialog::on_test_button_4_clicked()
+{
+    for (qint16 i = 1; i < 165; i++) {
+        on_test_button_clicked();
+    }
+
+    on_test_button_2_clicked();
 }
