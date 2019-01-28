@@ -42,6 +42,7 @@
 #define FW_PAKET_BUF_SIZE   200   
 #define IAP_CONFIG_PACKET_BUFSIZE 		      256
 
+#define IAP_FW_DATA_LEN  128
  enum {
      FW_UPDATE_REQ           =  	          1,
      FW_UPDATE_ACK	        = 	          2,
@@ -96,6 +97,14 @@ struct fw_update_s {
 } ;
 typedef struct fw_update_s  fw_update_t;
 
+#pragma pack(push, 1)
+typedef struct {
+    uint16_t total_block;
+    uint16_t cur_block;
+    uint16_t block_len;
+    uint8_t data[IAP_FW_DATA_LEN];
+} fw_packet_t;
+#pragma pack(pop)
 
 int packet_creat_address(uint8_t src, uint8_t dest);
 void pakect_send(uint8_t cmd, uint8_t *playload, uint16_t length, uint8_t *buf, uint8_t *new_len);
