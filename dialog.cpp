@@ -11,7 +11,6 @@ MasterThread::MasterThread(QObject *parent)
 {
 }
 
-//! [0]
 MasterThread::~MasterThread()
 {
 
@@ -37,7 +36,10 @@ void MasterThread::run()
 Dialog::Dialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::Dialog),
-    mSerialPort(new QSerialPort)
+    mSerialPort(new QSerialPort),
+    mTimer (new QTimer()),
+    update_req(false),
+    update_i(0)
 {
     ui->setupUi(this);
 
@@ -50,11 +52,18 @@ Dialog::Dialog(QWidget *parent) :
     memset((void*)&mPacket, 0x00, (size_t)sizeof(packet_desc_t));
     memset((void*)&_firmware_data, 0x00, (size_t)sizeof(fw_packet_t));
 
+    connect(mTimer, SIGNAL(timeout()), this, SLOT(update()));
+    mTimer->start(200);
 }
 
 Dialog::~Dialog()
 {
     delete ui;
+}
+
+void Dialog::update()
+{
+    send_firmwre_file();
 }
 
 void Dialog::on_open_button_clicked()
@@ -114,14 +123,13 @@ void Dialog::on_read_version_button_clicked()
     }
     mSerialPort->write(array);
     mSerialPort->flush();
-    mThread.set_cmd("sleep");
     if (mSerialPort->waitForReadyRead(2000)) {
         QByteArray responseData = mSerialPort->readAll();
         while (mSerialPort->waitForReadyRead(10))
             responseData += mSerialPort->readAll();
         qDebug() << "datasize" << responseData.size();
         char *buf = responseData.data();
-        for (quint32 i = 0; i <responseData.size(); i++ ) {
+        for (int i = 0; i < responseData.size(); i++ ) {
 
              if(packet_parse_data_callback(buf[i], &mPacket)) {
                  quint8 cmd = mPacket.data[0];
@@ -160,13 +168,14 @@ void Dialog::on_update_firmware_button_clicked()
         array = QByteArray((char*)buffer, tx_len);
     }
     mSerialPort->write(array);
-    mThread.set_cmd("sleep");
+//    mThread.set_cmd("sleep");
     if (mSerialPort->waitForReadyRead(3000)) {
         QByteArray responseData = mSerialPort->readAll();
-        while (mSerialPort->waitForReadyRead(10))
+
+        while (mSerialPort->waitForReadyRead(100))
             responseData += mSerialPort->readAll();
+
         qDebug() << "datasize" << responseData.size();
-//        qDebug() << responseData;
         char *buf = responseData.data();
         for (quint8 i = 0; i <responseData.size(); i++ ) {
              if(packet_parse_data_callback(buf[i], &mPacket)) {
@@ -176,7 +185,8 @@ void Dialog::on_update_firmware_button_clicked()
                       qDebug() << "ack";
                       ui->status_display->setText("ack");
                       send_file();
-                      on_test_button_4_clicked();
+                      update_req = true;
+                      update_i = 0;
                       break;
                  }
              }
@@ -185,24 +195,23 @@ void Dialog::on_update_firmware_button_clicked()
          qDebug() << "timeout";
          ui->status_display->setText("timeout");
     }
-
-
 }
 
 int Dialog::send_file(void)
 {
     QFileDialog *fileDialog = new QFileDialog(this);
     if(fileDialog->exec() == QDialog::Accepted) {
-           QString path = fileDialog->selectedFiles()[0];
-           qDebug() << "path" << path;
-           QFile file(path);
+            QString path = fileDialog->selectedFiles()[0];
+            qDebug() << "path" << path;
+            QFile file(path);
 
-           if (file.open(QIODevice::ReadOnly) == true)
-           {
-               qDebug() << "file open ok";
-           }
-         buffer_read = file.readAll();
-         file.close();
+            if (file.open(QIODevice::ReadOnly) == true)
+            {
+                qDebug() << "file open ok";
+            }
+
+            buffer_read = file.readAll();
+            file.close();
 
          qint64 filesize = file.size();
         _firmware_data.total_block = (filesize+IAP_FW_DATA_LEN)/IAP_FW_DATA_LEN;
@@ -217,7 +226,7 @@ int Dialog::send_file(void)
     return 0;
 }
 
-void Dialog::send_onepakcet(char*p, qint16 len)
+void Dialog::send_firmwre_file_one_packet(char*p, qint16 len)
 {
     if(!mIsOpen) {
         qDebug() << "serial no open!";
@@ -238,55 +247,44 @@ void Dialog::send_onepakcet(char*p, qint16 len)
     buf.clear();
 }
 
-void Dialog::on_test_button_clicked()
+
+void Dialog::send_firmwre_file_packet()
 {
     char *p = buffer_read.data();
     char *p1 = p + (_firmware_data.cur_block-1) * 512;
-    send_onepakcet(p1, 512);
+    send_firmwre_file_one_packet(p1, 512);
     qDebug("total: %d, cur:%d, len:%d\r\n", _firmware_data.total_block, _firmware_data.cur_block,_firmware_data.block_len);
-
     _firmware_data.cur_block++;
-    mThread.set_cmd("sleep");
 }
 
-void Dialog::on_test_button_2_clicked()
+void Dialog::send_firmwre_file_last_packet()
 {
     _firmware_data.cur_block = _firmware_data.total_block;
-
     char *p = buffer_read.data();
     char *p1 = p + (_firmware_data.total_block-1) * 512;
-    send_onepakcet(p1, last_packet);
-    mThread.set_cmd("sleep");
+    send_firmwre_file_one_packet(p1, last_packet);
 }
 
-void Dialog::on_test_button_3_clicked()
+void Dialog::send_firmwre_file()
 {
-    char *p = buffer_read.data();
+    if (!update_req){
+        return;
+    }
 
-    char *p1 = p + (_firmware_data.total_block-2) * 512;
-
-    send_onepakcet(p1, 512);
-
-    qDebug("total: %d, cur:%d, len:%d\r\n", _firmware_data.total_block, _firmware_data.cur_block,_firmware_data.block_len);
-
-
-    _firmware_data.cur_block++;
-    mThread.set_cmd("sleep");
-}
-
-void Dialog::on_test_button_4_clicked()
-{
-    for (qint16 i = 1; i < 165; i++) {
-        on_test_button_clicked();
-
+    if (update_i < (_firmware_data.total_block -1)) {
+        send_firmwre_file_packet();
         QString output1 = QString("total_block:%1.").arg((int)_firmware_data.total_block);
         QString output2 = QString("cur_block:%1.").arg((int)_firmware_data.cur_block);
         QString output3 = QString("block_len:%1").arg((int)_firmware_data.block_len);
         output1 +=  output2;
         output1 +=  output3;
-
         ui->status_display->setText(output1);
+    } else if(update_i == _firmware_data.total_block){
+        send_firmwre_file_last_packet();
+        update_req = false;
+        update_i = 0;
+        return;
     }
 
-    on_test_button_2_clicked();
+    update_i++;
 }

@@ -5,6 +5,7 @@
 #include <QSerialPort>
 #include "packet.h"
 #include <QThread>
+#include <QTimer>
 
 namespace Ui {
 class Dialog;
@@ -18,21 +19,11 @@ public:
     MasterThread(QObject *parent = 0);
     ~MasterThread();
 
-//    void transaction(const QString &portName, int waitTimeout, const QString &request);
     void run();
     void set_cmd(const QString &s);
 
-signals:
-//    void response(const QString &s);
-//    void error(const QString &s);
-//    void timeout(const QString &s);
-
 private:
-//    QString portName;
-//    QString request;
-//    int waitTimeout;
-//    QMutex mutex;
-//    QWaitCondition cond;
+
     bool quit;
 };
 
@@ -44,21 +35,16 @@ public:
     explicit Dialog(QWidget *parent = 0);
     ~Dialog();
     int send_file(void);
+    void send_firmwre_file_one_packet(char*p, qint16 len);
+    void send_firmwre_file_packet();
+    void send_firmwre_file_last_packet();
+    void send_firmwre_file();
 
 private slots:
     void on_open_button_clicked();
-
     void on_read_version_button_clicked();
-
     void on_update_firmware_button_clicked();
-
-    void on_test_button_clicked();
-    void send_onepakcet(char*p, qint16 len);
-    void on_test_button_2_clicked();
-
-    void on_test_button_3_clicked();
-
-    void on_test_button_4_clicked();
+    void update();
 
 private:
     Ui::Dialog *ui;
@@ -70,15 +56,10 @@ private:
     MasterThread mThread;
     QByteArray buffer_read;
     qint16 last_packet;
-
-
-//    int _fd = -1;
-//    uint8_t buf[128];
-//    bool req = false;
-//    bool ack = false;
-//    packet_desc_t packet;
+    QTimer *mTimer;
+    bool update_req;
+    qint16 update_i;
     fw_packet_t _firmware_data;
-
 };
 
 #endif // DIALOG_H
