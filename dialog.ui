@@ -7,11 +7,11 @@
     <x>0</x>
     <y>0</y>
     <width>514</width>
-    <height>405</height>
+    <height>141</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>无距升级工具</string>
   </property>
   <widget class="QPushButton" name="read_version_button">
    <property name="geometry">
@@ -98,16 +98,6 @@
     <string>打开</string>
    </property>
   </widget>
-  <widget class="QComboBox" name="serial_box_2">
-   <property name="geometry">
-    <rect>
-     <x>90</x>
-     <y>100</y>
-     <width>271</width>
-     <height>22</height>
-    </rect>
-   </property>
-  </widget>
   <widget class="QPushButton" name="test_button">
    <property name="geometry">
     <rect>
@@ -158,6 +148,16 @@
    </property>
    <property name="text">
     <string>测试4</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="status_display">
+   <property name="geometry">
+    <rect>
+     <x>90</x>
+     <y>100</y>
+     <width>271</width>
+     <height>20</height>
+    </rect>
    </property>
   </widget>
  </widget>

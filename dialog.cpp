@@ -121,7 +121,7 @@ void Dialog::on_read_version_button_clicked()
             responseData += mSerialPort->readAll();
         qDebug() << "datasize" << responseData.size();
         char *buf = responseData.data();
-        for (quint8 i = 0; i <responseData.size(); i++ ) {
+        for (quint32 i = 0; i <responseData.size(); i++ ) {
 
              if(packet_parse_data_callback(buf[i], &mPacket)) {
                  quint8 cmd = mPacket.data[0];
@@ -166,6 +166,7 @@ void Dialog::on_update_firmware_button_clicked()
         while (mSerialPort->waitForReadyRead(10))
             responseData += mSerialPort->readAll();
         qDebug() << "datasize" << responseData.size();
+//        qDebug() << responseData;
         char *buf = responseData.data();
         for (quint8 i = 0; i <responseData.size(); i++ ) {
              if(packet_parse_data_callback(buf[i], &mPacket)) {
@@ -173,6 +174,7 @@ void Dialog::on_update_firmware_button_clicked()
                  switch(cmd) {
                  case FW_UPDATE_ACK:
                       qDebug() << "ack";
+                      ui->status_display->setText("ack");
                       send_file();
                       on_test_button_4_clicked();
                       break;
@@ -181,6 +183,7 @@ void Dialog::on_update_firmware_button_clicked()
         }
     } else {
          qDebug() << "timeout";
+         ui->status_display->setText("timeout");
     }
 
 
@@ -241,6 +244,7 @@ void Dialog::on_test_button_clicked()
     char *p1 = p + (_firmware_data.cur_block-1) * 512;
     send_onepakcet(p1, 512);
     qDebug("total: %d, cur:%d, len:%d\r\n", _firmware_data.total_block, _firmware_data.cur_block,_firmware_data.block_len);
+
     _firmware_data.cur_block++;
     mThread.set_cmd("sleep");
 }
@@ -264,6 +268,8 @@ void Dialog::on_test_button_3_clicked()
     send_onepakcet(p1, 512);
 
     qDebug("total: %d, cur:%d, len:%d\r\n", _firmware_data.total_block, _firmware_data.cur_block,_firmware_data.block_len);
+
+
     _firmware_data.cur_block++;
     mThread.set_cmd("sleep");
 }
@@ -272,6 +278,14 @@ void Dialog::on_test_button_4_clicked()
 {
     for (qint16 i = 1; i < 165; i++) {
         on_test_button_clicked();
+
+        QString output1 = QString("total_block:%1.").arg((int)_firmware_data.total_block);
+        QString output2 = QString("cur_block:%1.").arg((int)_firmware_data.cur_block);
+        QString output3 = QString("block_len:%1").arg((int)_firmware_data.block_len);
+        output1 +=  output2;
+        output1 +=  output3;
+
+        ui->status_display->setText(output1);
     }
 
     on_test_button_2_clicked();
