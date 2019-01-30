@@ -11,22 +11,6 @@ namespace Ui {
 class Dialog;
 }
 
-class MasterThread : public QThread
-{
-    Q_OBJECT
-
-public:
-    MasterThread(QObject *parent = 0);
-    ~MasterThread();
-
-    void run();
-    void set_cmd(const QString &s);
-
-private:
-
-    bool quit;
-};
-
 class Dialog : public QDialog
 {
     Q_OBJECT
@@ -53,7 +37,6 @@ private:
     bool mIsOpen;
     bool mFirstOpen;
     packet_desc_t mPacket;
-    MasterThread mThread;
     QByteArray buffer_read;
     qint16 last_packet;
     QTimer *mTimer;

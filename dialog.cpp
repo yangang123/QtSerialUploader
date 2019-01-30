@@ -6,33 +6,6 @@
 #include <QFileDialog>
 #include "packet.h"
 
-MasterThread::MasterThread(QObject *parent)
-    : QThread(parent),quit(false)
-{
-}
-
-MasterThread::~MasterThread()
-{
-
-}
-
-void MasterThread::set_cmd(const QString &s)
-{
-    if (s == "sleep") {
-         qDebug() << "sleep";
-         QThread::msleep(200);
-    }
-}
-
-
-void MasterThread::run()
-{
-    while (!quit) {
-        QThread::sleep(1);
-        qDebug() << "master thread";
-    }
-}
-
 Dialog::Dialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::Dialog),
@@ -103,8 +76,6 @@ void Dialog::on_open_button_clicked()
         } else {
             qDebug() << "portName close";
         }
-
-        mThread.set_cmd("start");
     }
 }
 
@@ -279,6 +250,9 @@ void Dialog::send_firmwre_file()
         output1 +=  output2;
         output1 +=  output3;
         ui->status_display->setText(output1);
+        int value = ((float)_firmware_data.cur_block/_firmware_data.total_block) *100;
+        ui->progressBar->setValue(value);
+
     } else if(update_i == _firmware_data.total_block){
         send_firmwre_file_last_packet();
         update_req = false;

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>514</width>
-    <height>127</height>
+    <height>131</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -65,9 +65,9 @@
   <widget class="QPushButton" name="update_firmware_button">
    <property name="geometry">
     <rect>
-     <x>364</x>
+     <x>374</x>
      <y>100</y>
-     <width>81</width>
+     <width>71</width>
      <height>23</height>
     </rect>
    </property>
@@ -101,11 +101,24 @@
   <widget class="QLineEdit" name="status_display">
    <property name="geometry">
     <rect>
-     <x>90</x>
-     <y>100</y>
+     <x>70</x>
+     <y>160</y>
      <width>271</width>
      <height>20</height>
     </rect>
+   </property>
+  </widget>
+  <widget class="QProgressBar" name="progressBar">
+   <property name="geometry">
+    <rect>
+     <x>90</x>
+     <y>100</y>
+     <width>271</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="value">
+    <number>0</number>
    </property>
   </widget>
  </widget>
