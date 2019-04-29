@@ -100,21 +100,24 @@ void Dialog::on_read_version_button_clicked()
             responseData += mSerialPort->readAll();
         qDebug() << "datasize" << responseData.size();
         char *buf = responseData.data();
+
         for (int i = 0; i < responseData.size(); i++ ) {
 
              if(packet_parse_data_callback(buf[i], &mPacket)) {
                  quint8 cmd = mPacket.data[0];
+
                  switch(cmd) {
                  case FW_UPDATE_ACK:
                       qDebug() << "ack";
                       break;
 
                  case FW_UPDATE_VERREPLY:
-                    QString output1 = QString("%1.").arg((int)mPacket.data[1]);
-                    QString output2 = QString("%1.").arg((int)mPacket.data[2]);
-                    QString output3 = QString("%1").arg((int)mPacket.data[3]);
-                    output1 +=  output2;
-                    output1 +=  output3;
+                    QString output1;
+                    output1.append(mPacket.data[13]);
+                    output1.append('.');
+                    output1.append(mPacket.data[15]);
+                    output1.append('.');
+                    output1.append(mPacket.data[16]);
                     ui->version_display->setText(output1);
                     break;
                  }
@@ -133,7 +136,8 @@ void Dialog::on_update_firmware_button_clicked()
 
     quint8 buffer[20];
     quint16 tx_len =0;
-    pakect_send(FW_UPDATE_REQ, (quint8*)0, 0, (quint8*)buffer, &tx_len);
+
+    pakect_send(FW_UPDATE_ERASE, (quint8*)0, 0, (quint8*)buffer, &tx_len);
     QByteArray array;
     if (tx_len) {
         array = QByteArray((char*)buffer, tx_len);
