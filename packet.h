@@ -15,7 +15,7 @@
 
 #define FW_PAKET_BUF_SIZE   					200
 #define IAP_CONFIG_PACKET_BUFSIZE 		       2048
-#define IAP_FW_DATA_LEN 		               128
+#define IAP_FW_DATA_LEN 		               512
 enum {
     FW_START1_POS 	=   	0,
     FW_START2_POS	=   	1,

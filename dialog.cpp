@@ -128,11 +128,27 @@ void Dialog::on_read_version_button_clicked()
     }
 }
 
+void Dialog::sendReset()
+{
+   if(!mIsOpen) {
+       return;
+   }
+
+   QString command= QString("reboot\r\n");
+   QByteArray array;
+   array.append(command);
+   mSerialPort->write(array);
+   mSerialPort->flush();
+}
+
 void Dialog::on_update_firmware_button_clicked()
 {
     if(!mIsOpen) {
         return;
     }
+
+    sendReset();
+    QThread::msleep(500);
 
     quint8 buffer[20];
     quint16 tx_len =0;
@@ -156,7 +172,7 @@ void Dialog::on_update_firmware_button_clicked()
              if(packet_parse_data_callback(buf[i], &mPacket)) {
                  quint8 cmd = mPacket.data[0];
                  switch(cmd) {
-                 case FW_UPDATE_ACK:
+                 case FW_UPDATE_OK:
                       qDebug() << "ack";
                       ui->status_display->setText("ack");
                       send_file();
@@ -171,6 +187,48 @@ void Dialog::on_update_firmware_button_clicked()
          ui->status_display->setText("timeout");
     }
 }
+
+bool Dialog::sendResetCmdFormBootloader()
+{
+    if(!mIsOpen) {
+        return false;
+    }
+
+    quint8 buffer[20];
+    quint16 tx_len =0;
+
+    pakect_send(FW_UPDATE_RESET, (quint8*)0, 0, (quint8*)buffer, &tx_len);
+    QByteArray array;
+    if (tx_len) {
+        array = QByteArray((char*)buffer, tx_len);
+    }
+    mSerialPort->write(array);
+    if (mSerialPort->waitForReadyRead(3000)) {
+        QByteArray responseData = mSerialPort->readAll();
+
+        while (mSerialPort->waitForReadyRead(100))
+            responseData += mSerialPort->readAll();
+
+        qDebug() << "datasize" << responseData.size();
+        char *buf = responseData.data();
+        for (quint8 i = 0; i <responseData.size(); i++ ) {
+             if(packet_parse_data_callback(buf[i], &mPacket)) {
+                 quint8 cmd = mPacket.data[0];
+                 switch(cmd) {
+                 case FW_UPDATE_OK:
+                      qDebug() << "reset ok";
+                      ui->status_display->setText("reset ok");
+                      return true;
+                 }
+             }
+        }
+    }
+
+    qDebug() << "timeout";
+    ui->status_display->setText("timeout");
+    return false;
+}
+
 
 int Dialog::send_file(void)
 {
@@ -261,6 +319,34 @@ void Dialog::send_firmwre_file()
         send_firmwre_file_last_packet();
         update_req = false;
         update_i = 0;
+
+        if (mSerialPort->waitForReadyRead(3000)) {
+            QByteArray responseData = mSerialPort->readAll();
+
+            while (mSerialPort->waitForReadyRead(100))
+                responseData += mSerialPort->readAll();
+
+            qDebug() << "datasize" << responseData.size();
+            char *buf = responseData.data();
+            for (quint8 i = 0; i <responseData.size(); i++ ) {
+                 if(packet_parse_data_callback(buf[i], &mPacket)) {
+                     quint8 cmd = mPacket.data[0];
+                     switch(cmd) {
+                     case FW_UPDATE_OK:
+
+                          qDebug() << "download file ok";
+                          ui->status_display->setText("download file ok");
+
+                          sendResetCmdFormBootloader();
+                          break;
+                     }
+                 }
+            }
+        } else {
+             qDebug() << "timeout";
+             ui->status_display->setText("timeout");
+        }
+
         return;
     }
 

@@ -18,11 +18,7 @@ class Dialog : public QDialog
 public:
     explicit Dialog(QWidget *parent = 0);
     ~Dialog();
-    int send_file(void);
-    void send_firmwre_file_one_packet(char*p, qint16 len);
-    void send_firmwre_file_packet();
-    void send_firmwre_file_last_packet();
-    void send_firmwre_file();
+
 
 private slots:
     void on_open_button_clicked();
@@ -31,6 +27,14 @@ private slots:
     void update();
 
 private:
+    int  send_file(void);
+    void send_firmwre_file_one_packet(char*p, qint16 len);
+    void send_firmwre_file_packet();
+    void send_firmwre_file_last_packet();
+    void send_firmwre_file();
+    void sendReset();
+    bool sendResetCmdFormBootloader();
+
     Ui::Dialog *ui;
     QSerialPort *mSerialPort;
     QString portName;
