@@ -1,6 +1,42 @@
 #include "SerialLink.h"
 
-SerialLink::SerialLink(SerialConfiguration* config)
+SerialLink::SerialLink():
+    mSerialPort(new QSerialPort)
 {
-    Q_ASSERT(config != NULL);
+     QObject::connect(mSerialPort, &QIODevice::readyRead, this, &SerialLink::_readBytes);
+}
+
+bool SerialLink::connectLink()
+{
+    if (mIsOpen) {
+         qDebug() << "portName close";
+         mSerialPort->close();
+    }
+    mSerialPort->setPortName(portName);
+    mSerialPort->setBaudRate(QSerialPort::Baud115200);
+    mSerialPort->setParity(QSerialPort::NoParity);
+    mSerialPort->setStopBits(QSerialPort::OneStop);
+
+    mSerialPort->open(QSerialPort::ReadWrite);
+    mIsOpen = mSerialPort->isOpen();
+    if (mIsOpen) {
+        qDebug() << "portName open" << "openDate:" << QDate::currentDate();
+        return true;
+    }
+    qDebug() << "portName close";
+    return false ;
+}
+
+void SerialLink::_readBytes(void)
+{
+    if (mSerialPort && mSerialPort->isOpen()) {
+        qint64 byteCount = mSerialPort->bytesAvailable();
+        if (byteCount) {
+            QByteArray buffer;
+            buffer.resize(byteCount);
+            mSerialPort->read(buffer.data(), buffer.size());
+            qDebug() << "count" << byteCount;
+            emit bytesReceived(this, buffer);
+        }
+    }
 }

@@ -15,10 +15,12 @@ TEMPLATE = app
 SOURCES += main.cpp\
         dialog.cpp packet.c crc16.c \
     LinkInterface.cpp \
-    SerialLink.cpp
+    SerialLink.cpp \
+    RtkConfig.cpp
 
 HEADERS  += dialog.h packet.h crc16.h \
     LinkInterface.h \
-    SerialLink.h
+    SerialLink.h \
+    RtkConfig.h
 
 FORMS    += dialog.ui
