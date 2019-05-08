@@ -11,7 +11,9 @@
 #include <QDate>
 
 #include "LinkInterface.h"
+#include "RtkConfig.h"
 
+class RtkConfig;
 class SerialConfiguration
 {
 public:
@@ -29,29 +31,28 @@ private:
 };
 
 
-class SerialLink : public LinkInterface
+class SerialLink : public QThread
 {
     Q_OBJECT
 public:
     explicit SerialLink();
     explicit SerialLink(SerialConfiguration *config);
     bool connectLink();
+    void run();
 
     QSerialPort *mSerialPort;
-    packet_desc_t mPacket;
-    QByteArray buffer_read;
-    qint16 last_packet;
-    QTimer *mTimer;
-    bool update_req;
-    qint16 update_i;
-    fw_packet_t _firmware_data;
-
     QString portName;
     bool mIsOpen;
     bool mFirstOpen;
+    RtkConfig *_config;
+    void setRkConfig(RtkConfig *config)
+    {
+        _config = config;
+    }
 
 public slots:
       void _readBytes();
+      void writeBytes(const char* data, qint64 length);
 
 signals:
       void bytesReceived(LinkInterface* link, QByteArray data);

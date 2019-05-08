@@ -34,7 +34,6 @@ void RtkConfig::send_firmwre_file_one_packet(char*p, qint16 len)
     buf.clear();
 }
 
-
 void RtkConfig::send_firmwre_file_packet()
 {
     char *p = buffer_read.data();
@@ -74,32 +73,7 @@ void RtkConfig::send_firmwre_file()
         update_req = false;
         update_i = 0;
 
-        if (_link->mSerialPort->waitForReadyRead(3000)) {
-            QByteArray responseData = _link->mSerialPort->readAll();
-
-            while (_link->mSerialPort->waitForReadyRead(100))
-                responseData += _link->mSerialPort->readAll();
-
-            qDebug() << "datasize" << responseData.size();
-            char *buf = responseData.data();
-            for (quint8 i = 0; i <responseData.size(); i++ ) {
-                 if(packet_parse_data_callback(buf[i], &mPacket)) {
-                     quint8 cmd = mPacket.data[0];
-                     switch(cmd) {
-                     case FW_UPDATE_OK:
-
-                          qDebug() << "download file ok";
-                          //ui->status_display->setText("download file ok");
-
-                          sendResetCmdFormBootloader();
-                          break;
-                     }
-                 }
-            }
-        } else {
-             qDebug() << "timeout";
-             //ui->status_display->setText("timeout");
-        }
+        sendResetCmdFormBootloader();
 
         return;
     }
@@ -114,47 +88,23 @@ bool RtkConfig::sendResetCmdFormBootloader()
     quint16 tx_len =0;
 
     pakect_send(FW_UPDATE_RESET, (quint8*)0, 0, (quint8*)buffer, &tx_len);
-    QByteArray array;
-    if (tx_len) {
-        array = QByteArray((char*)buffer, tx_len);
-    }
-    _link->mSerialPort->write(array);
-    if (_link->mSerialPort->waitForReadyRead(3000)) {
-        QByteArray responseData = _link->mSerialPort->readAll();
-
-        while (_link->mSerialPort->waitForReadyRead(100))
-            responseData += _link->mSerialPort->readAll();
-
-        qDebug() << "datasize" << responseData.size();
-        char *buf = responseData.data();
-        for (quint8 i = 0; i <responseData.size(); i++ ) {
-             if(packet_parse_data_callback(buf[i], &mPacket)) {
-                 quint8 cmd = mPacket.data[0];
-                 switch(cmd) {
-                 case FW_UPDATE_OK:
-
-                      QString str = QString("reset ok");
-                      qDebug() << str;
-                      emit sendStatusStr(str);
-                      return true;
-                 }
-             }
-        }
-    }
-
-    qDebug() << "timeout";
-    //ui->status_display->setText("timeout");
-    return false;
+    _link->writeBytes((const char*)buffer, tx_len);
+    return true;
 }
 
 void RtkConfig::sendReset()
 {
+   char* command = "reboot\r\n";
+   _link->writeBytes((const char*)command, 8);
+}
 
-   QString command= QString("reboot\r\n");
-   QByteArray array;
-   array.append(command);
-   _link->mSerialPort->write(array);
-   _link->mSerialPort->flush();
+void RtkConfig::sendErase()
+{
+    qDebug() << "erase";
+    quint8 buffer[20];
+    quint16 tx_len =0;
+    pakect_send(FW_UPDATE_ERASE, (quint8*)0, 0, (quint8*)buffer, &tx_len);
+    _link->writeBytes((const char*)buffer, tx_len);
 }
 
 void RtkConfig::readVersion()
@@ -163,47 +113,63 @@ void RtkConfig::readVersion()
     quint8 buffer[20];
     quint16 tx_len =0;
     pakect_send(FW_UPDATE_VERREQ, (quint8*)0, 0, (quint8*)buffer, &tx_len);
-    QByteArray array;
-    if (tx_len) {
-        array = QByteArray((char*)buffer, tx_len);
+    _link->writeBytes((const char*)buffer, tx_len);
+}
+
+void RtkConfig::updateFile(QString &path)
+{
+    QFile file(path);
+
+    if (file.open(QIODevice::ReadOnly) == true)
+    {
+        qDebug() << "file open ok";
     }
-    _link->mSerialPort->write(array);
-    _link->mSerialPort->flush();
-    if (_link->mSerialPort->waitForReadyRead(2000)) {
-        QByteArray responseData = _link->mSerialPort->readAll();
-        while (_link->mSerialPort->waitForReadyRead(10))
-            responseData += _link->mSerialPort->readAll();
-        qDebug() << "datasize" << responseData.size();
-        char *buf = responseData.data();
 
-        for (int i = 0; i < responseData.size(); i++ ) {
+    buffer_read = file.readAll();
+    file.close();
 
-             if(packet_parse_data_callback(buf[i], &mPacket)) {
-                 quint8 cmd = mPacket.data[0];
+    qint64 filesize = file.size();
+    _firmware_data.total_block = (filesize+IAP_FW_DATA_LEN)/IAP_FW_DATA_LEN;
+    _firmware_data.block_len = IAP_FW_DATA_LEN;
+    _firmware_data.cur_block = 1;
+    last_packet = filesize % IAP_FW_DATA_LEN ;
 
-                 switch(cmd) {
-                 case FW_UPDATE_ACK:
-                      qDebug() << "ack";
-                      break;
+    qDebug() << "firmware total_block:" <<_firmware_data.total_block << "len" << _firmware_data.block_len;
+    qDebug() << "filesize:" << filesize  << "last_packet" << last_packet;
 
-                 case FW_UPDATE_VERREPLY:
-                    QString output1;
-                    output1.append(mPacket.data[13]);
-                    output1.append('.');
-                    output1.append(mPacket.data[15]);
-                    output1.append('.');
-                    output1.append(mPacket.data[16]);
-                    //ui->version_display->setText(output1);
-                    break;
-                 }
-             }
-        }
-    } else {
-         qDebug() << "timeout";
-    }
+//    sendReset();
+//    QThread::msleep(500);
+//    sendErase();
+//    QThread::msleep(100);
+
+    update_req = true;
+    update_i = 0;
 }
 
 void RtkConfig::receiveBytes(LinkInterface* link, QByteArray b)
 {
-     qDebug() << "size" << b.size();
+        char *buf = b.data();
+        for (int i = 0; i < b.size(); i++ ) {
+             if(packet_parse_data_callback(buf[i], &mPacket)) {
+                 quint8 cmd = mPacket.data[0];
+
+                 switch(cmd) {
+                 case FW_UPDATE_OK:
+                      qDebug() << "OK";
+                      packetReplyOk = true;
+                      break;
+
+                 case FW_UPDATE_VERREPLY:
+                     QString output1;
+                     output1.append(mPacket.data[13]);
+                     output1.append('.');
+                     output1.append(mPacket.data[15]);
+                     output1.append('.');
+                     output1.append(mPacket.data[16]);
+                     qDebug() << output1;
+                     emit sendStatusStr(output1);
+                     break;
+                  }
+             }
+        }
 }

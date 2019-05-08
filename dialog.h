@@ -20,7 +20,7 @@ class Dialog : public QDialog
 public:
     explicit Dialog(QWidget *parent = 0);
     ~Dialog();
-
+     RtkConfig *_rtkConfig;
 
 private slots:
     void on_open_button_clicked();
@@ -29,10 +29,16 @@ private slots:
 
     void statusStrShow(QString &status);
 
+
+    void on_pushButton_erase_clicked();
+
+    void on_pushButton_reset_clicked();
+
 private:
     Ui::Dialog *ui;
-    RtkConfig *_rtkConfig;
+
     SerialLink *_serialLink;
+
 };
 
 

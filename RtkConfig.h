@@ -9,6 +9,9 @@
 #include <QTimer>
 #include <QDebug>
 #include "SerialLink.h"
+#include <QFile>
+
+class SerialLink;
 
 class RtkConfig : public QObject
 {
@@ -17,6 +20,10 @@ public:
     explicit RtkConfig(QObject *parent = 0);
     SerialLink *_link;
     void readVersion();
+    void receiveBytes(LinkInterface* link, QByteArray b);
+    void updateFile(QString &path);
+    void sendErase();
+    void sendReset();
 
 signals:
     void sendStatusStr(QString &status);
@@ -24,7 +31,7 @@ signals:
 
 public slots:
     void update();
-    void receiveBytes(LinkInterface* link, QByteArray b);
+
 
 private:
     int  send_file(void);
@@ -32,7 +39,7 @@ private:
     void send_firmwre_file_packet();
     void send_firmwre_file_last_packet();
     void send_firmwre_file();
-    void sendReset();
+
     bool sendResetCmdFormBootloader();
 
     packet_desc_t mPacket;
@@ -46,6 +53,8 @@ private:
     QString portName;
     bool mIsOpen;
     bool mFirstOpen;
+
+    bool packetReplyOk;
 
 
 };
