@@ -20,7 +20,7 @@ public:
     bool connectLink(QString &name);
 
 signals:
-      void bytesReceived(QByteArray data);
+      void bytesReceived(LinkInterface *link, QByteArray data);
 
 public slots:
       void _readBytes();

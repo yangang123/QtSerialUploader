@@ -21,7 +21,7 @@ Dialog::Dialog(QWidget *parent) :
 
    connect(_rtkConfig, &RtkConfig::sendStatusStr, this, &Dialog::statusStrShow);
 
-   QObject::connect(_rtkConfig->_link, SIGNAL(bytesReceived(QByteArray)), _rtkConfig, SLOT(receiveBytes(QByteArray)));
+   QObject::connect(_rtkConfig->_link,&SerialLink::bytesReceived, _rtkConfig, &RtkConfig::receiveBytes);
 }
 
 Dialog::~Dialog()

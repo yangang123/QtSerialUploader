@@ -143,7 +143,7 @@ void RtkConfig::open_link(QString &name)
     }
 }
 
-void RtkConfig::receiveBytes(QByteArray b)
+void RtkConfig::receiveBytes(LinkInterface *link, QByteArray b)
 {
        qDebug() << "size" << b.size();
 

@@ -36,7 +36,7 @@ void SerialLink::_readBytes(void)
             buffer.resize(byteCount);
             mSerialPort->read(buffer.data(), buffer.size());
             qDebug() << "count" << byteCount;
-            emit bytesReceived(buffer);
+            emit bytesReceived(this, buffer);
         }
     }
 }

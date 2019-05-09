@@ -26,11 +26,11 @@ public:
     SerialLink *_link;
 signals:
     void sendStatusStr(QString &status);
-    void bytesReceived(QByteArray data);
+
 
 public slots:
     void update();
-    void receiveBytes(QByteArray b);
+    void receiveBytes(LinkInterface *link, QByteArray b);
 
 private:
     int  send_file(void);
