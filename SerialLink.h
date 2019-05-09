@@ -10,8 +10,9 @@
 #include <QDebug>
 #include <QDate>
 
+#include "LinkInterface.h"
 
-class SerialLink : public QObject
+class SerialLink : public LinkInterface
 {
     Q_OBJECT
 public:

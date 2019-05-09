@@ -9,8 +9,7 @@
 Dialog::Dialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::Dialog),
-    _rtkConfig(new RtkConfig),
-    _serialLink(0)
+    _rtkConfig(new RtkConfig)
 {
     ui->setupUi(this);
 
@@ -21,13 +20,14 @@ Dialog::Dialog(QWidget *parent) :
     }
 
    connect(_rtkConfig, &RtkConfig::sendStatusStr, this, &Dialog::statusStrShow);
+
+   QObject::connect(_rtkConfig->_link, SIGNAL(bytesReceived(QByteArray)), _rtkConfig, SLOT(receiveBytes(QByteArray)));
 }
 
 Dialog::~Dialog()
 {
     delete ui;
 }
-
 void Dialog::on_open_button_clicked()
 {
    QString name =ui->serial_box->currentText();

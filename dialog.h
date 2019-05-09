@@ -36,9 +36,6 @@ private slots:
 
 private:
     Ui::Dialog *ui;
-
-    SerialLink *_serialLink;
-
 };
 
 

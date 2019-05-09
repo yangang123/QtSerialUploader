@@ -10,7 +10,7 @@ RtkConfig::RtkConfig(QObject *parent) :
     memset((void*)&mPacket, 0x00, (size_t)sizeof(packet_desc_t));
     memset((void*)&_firmware_data, 0x00, (size_t)sizeof(fw_packet_t));
 
-    QObject::connect(_link, SIGNAL(bytesReceived(QByteArray)), this, SLOT(receiveBytes(QByteArray)));
+
 }
 
 void RtkConfig::update()

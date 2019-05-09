@@ -23,7 +23,7 @@ public:
     void sendErase();
     void sendReset();
     void open_link(QString &name);
-
+    SerialLink *_link;
 signals:
     void sendStatusStr(QString &status);
     void bytesReceived(QByteArray data);
@@ -41,7 +41,7 @@ private:
 
     bool sendResetCmdFormBootloader();
 
-    SerialLink *_link;
+
 
     packet_desc_t mPacket;
     QByteArray buffer_read;
