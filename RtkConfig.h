@@ -18,20 +18,19 @@ class RtkConfig : public QObject
     Q_OBJECT
 public:
     explicit RtkConfig(QObject *parent = 0);
-    SerialLink *_link;
     void readVersion();
-    void receiveBytes(LinkInterface* link, QByteArray b);
     void updateFile(QString &path);
     void sendErase();
     void sendReset();
+    void open_link(QString &name);
 
 signals:
     void sendStatusStr(QString &status);
-
+    void bytesReceived(QByteArray data);
 
 public slots:
     void update();
-
+    void receiveBytes(QByteArray b);
 
 private:
     int  send_file(void);
@@ -42,6 +41,8 @@ private:
 
     bool sendResetCmdFormBootloader();
 
+    SerialLink *_link;
+
     packet_desc_t mPacket;
     QByteArray buffer_read;
     qint16 last_packet;
@@ -49,14 +50,7 @@ private:
     bool update_req;
     qint16 update_i;
     fw_packet_t _firmware_data;
-
-    QString portName;
-    bool mIsOpen;
-    bool mFirstOpen;
-
     bool packetReplyOk;
-
-
 };
 
 #endif // RTKCONFIG_H

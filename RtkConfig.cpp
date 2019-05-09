@@ -6,11 +6,11 @@ RtkConfig::RtkConfig(QObject *parent) :
     update_req(false),
     update_i(0)
 {
+    _link = new SerialLink();
     memset((void*)&mPacket, 0x00, (size_t)sizeof(packet_desc_t));
     memset((void*)&_firmware_data, 0x00, (size_t)sizeof(fw_packet_t));
 
-    connect(mTimer, SIGNAL(timeout()), this, SLOT(update()));
-    mTimer->start(200);
+    QObject::connect(_link, SIGNAL(bytesReceived(QByteArray)), this, SLOT(receiveBytes(QByteArray)));
 }
 
 void RtkConfig::update()
@@ -26,12 +26,7 @@ void RtkConfig::send_firmwre_file_one_packet(char*p, qint16 len)
 
     pakect_send(FW_UPDATE_DATA, (uint8_t*)&_firmware_data,
                 (quint16)(6+len), (quint8*)buffer_ret, &tx_len);
-
-    QByteArray buf = QByteArray(buffer_ret, tx_len);
-    qDebug() << "buf size" << buf.size();
-    _link->mSerialPort->write(buf);
-    _link->mSerialPort->flush();
-    buf.clear();
+    _link->writeBytes((const char*)buffer_ret, tx_len);
 }
 
 void RtkConfig::send_firmwre_file_packet()
@@ -137,17 +132,21 @@ void RtkConfig::updateFile(QString &path)
     qDebug() << "firmware total_block:" <<_firmware_data.total_block << "len" << _firmware_data.block_len;
     qDebug() << "filesize:" << filesize  << "last_packet" << last_packet;
 
-//    sendReset();
-//    QThread::msleep(500);
-//    sendErase();
-//    QThread::msleep(100);
-
     update_req = true;
     update_i = 0;
 }
 
-void RtkConfig::receiveBytes(LinkInterface* link, QByteArray b)
+void RtkConfig::open_link(QString &name)
 {
+    if (!_link->connectLink(name)) {
+       qDebug() <<  "link open error";
+    }
+}
+
+void RtkConfig::receiveBytes(QByteArray b)
+{
+       qDebug() << "size" << b.size();
+
         char *buf = b.data();
         for (int i = 0; i < b.size(); i++ ) {
              if(packet_parse_data_callback(buf[i], &mPacket)) {

@@ -3,16 +3,16 @@
 SerialLink::SerialLink():
     mSerialPort(new QSerialPort)
 {
-     //QObject::connect(mSerialPort, &QIODevice::readyRead, this, &SerialLink::_readBytes);
+     QObject::connect(mSerialPort, &QIODevice::readyRead, this, &SerialLink::_readBytes);
 }
 
-bool SerialLink::connectLink()
+bool SerialLink::connectLink(QString &name)
 {
     if (mIsOpen) {
          qDebug() << "portName close";
          mSerialPort->close();
     }
-    mSerialPort->setPortName(portName);
+    mSerialPort->setPortName(name);
     mSerialPort->setBaudRate(QSerialPort::Baud115200);
     mSerialPort->setParity(QSerialPort::NoParity);
     mSerialPort->setStopBits(QSerialPort::OneStop);
@@ -21,7 +21,6 @@ bool SerialLink::connectLink()
     mIsOpen = mSerialPort->isOpen();
     if (mIsOpen) {
         qDebug() << "portName open" << "openDate:" << QDate::currentDate();
-        start();
         return true;
     }
     qDebug() << "portName close";
@@ -37,33 +36,7 @@ void SerialLink::_readBytes(void)
             buffer.resize(byteCount);
             mSerialPort->read(buffer.data(), buffer.size());
             qDebug() << "count" << byteCount;
-            //emit bytesReceived(this, buffer);
-           // _config->receiveBytes(this, buffer);
-
-            char *buf = buffer.data();
-            for (int i = 0; i < buffer.size(); i++ ) {
-                 if(packet_parse_data_callback(buf[i], &mPacket)) {
-                     quint8 cmd = mPacket.data[0];
-
-                     switch(cmd) {
-                     case FW_UPDATE_OK:
-                          qDebug() << "OK";
-                          packetReplyOk = true;
-                          break;
-
-                     case FW_UPDATE_VERREPLY:
-                         QString output1;
-                         output1.append(mPacket.data[13]);
-                         output1.append('.');
-                         output1.append(mPacket.data[15]);
-                         output1.append('.');
-                         output1.append(mPacket.data[16]);
-                         qDebug() << output1;
-                         emit sendStatusStr(output1);
-                         break;
-                      }
-                 }
-            }
+            emit bytesReceived(buffer);
         }
     }
 }
@@ -76,12 +49,4 @@ void SerialLink::writeBytes(const char* data, qint64 size)
     }
 }
 
-void SerialLink::run()
-{
-    while(1) {
-        QThread::sleep(1);
-        _readBytes();
-        qDebug() << "run";
-    }
-}
 

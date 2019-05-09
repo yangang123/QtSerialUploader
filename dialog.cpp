@@ -30,17 +30,9 @@ Dialog::~Dialog()
 
 void Dialog::on_open_button_clicked()
 {
-     if (_serialLink == 0) {
-         _serialLink = new SerialLink();
-     }
-     _serialLink->portName = ui->serial_box->currentText();
-     if (!_serialLink->connectLink()) {
-        qDebug() <<  "link open error";
-        return;
-     }
-     _rtkConfig->_link  = _serialLink;
-     _serialLink->setRkConfig(_rtkConfig);
-     ui->status_display->setText("open ok");
+   QString name =ui->serial_box->currentText();
+   qDebug() << "name" << name;
+   _rtkConfig->open_link(name);
 }
 
 void Dialog::on_read_version_button_clicked()
