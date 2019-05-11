@@ -16,7 +16,7 @@ Dialog::Dialog(QWidget *parent) :
     foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts()) {
         QString serialPortItemName = info.manufacturer();
         serialPortItemName = info.portName();
-        ui->serial_box->addItem(serialPortItemName);
+        ui->comboBox_serialPort->addItem(serialPortItemName);
     }
 
    connect(_rtkConfig, &RtkConfig::sendStatusStr, this, &Dialog::statusStrShow);
@@ -30,7 +30,7 @@ Dialog::~Dialog()
 }
 void Dialog::on_open_button_clicked()
 {
-   QString name =ui->serial_box->currentText();
+   QString name =ui->comboBox_serialPort->currentText();
    qDebug() << "name" << name;
    _rtkConfig->open_link(name);
 }
@@ -53,7 +53,7 @@ void Dialog::on_update_firmware_button_clicked()
 
 void Dialog::statusStrShow(QString &status)
 {
-     ui->version_display->setText(status);
+     ui->label_displayVersion->setText(status);
 }
 
 void Dialog::on_pushButton_erase_clicked()
@@ -64,4 +64,34 @@ void Dialog::on_pushButton_erase_clicked()
 void Dialog::on_pushButton_reset_clicked()
 {
     _rtkConfig->sendReset();
+}
+
+void Dialog::on_pushButton_readVersion_clicked()
+{
+
+}
+
+void Dialog::on_pushButton_uploadFirmware_clicked()
+{
+
+}
+
+void Dialog::on_pushButton_readDeviceID_clicked()
+{
+
+}
+
+void Dialog::on_pushButton_configDeviceID_clicked()
+{
+
+}
+
+void Dialog::on_pushButton_readAcount_clicked()
+{
+
+}
+
+void Dialog::on_pushButton_configAcount_clicked()
+{
+
 }

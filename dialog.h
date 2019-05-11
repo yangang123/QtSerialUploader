@@ -34,6 +34,18 @@ private slots:
 
     void on_pushButton_reset_clicked();
 
+    void on_pushButton_readVersion_clicked();
+
+    void on_pushButton_uploadFirmware_clicked();
+
+    void on_pushButton_readDeviceID_clicked();
+
+    void on_pushButton_configDeviceID_clicked();
+
+    void on_pushButton_readAcount_clicked();
+
+    void on_pushButton_configAcount_clicked();
+
 private:
     Ui::Dialog *ui;
 };

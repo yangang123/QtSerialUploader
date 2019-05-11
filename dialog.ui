@@ -6,147 +6,414 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>514</width>
-    <height>296</height>
+    <width>489</width>
+    <height>374</height>
    </rect>
+  </property>
+  <property name="palette">
+   <palette>
+    <active>
+     <colorrole role="WindowText">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>0</red>
+        <green>0</green>
+        <blue>0</blue>
+       </color>
+      </brush>
+     </colorrole>
+    </active>
+    <inactive>
+     <colorrole role="WindowText">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>0</red>
+        <green>0</green>
+        <blue>0</blue>
+       </color>
+      </brush>
+     </colorrole>
+    </inactive>
+    <disabled>
+     <colorrole role="WindowText">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>120</red>
+        <green>120</green>
+        <blue>120</blue>
+       </color>
+      </brush>
+     </colorrole>
+    </disabled>
+   </palette>
   </property>
   <property name="windowTitle">
    <string>无距升级工具</string>
   </property>
-  <widget class="QPushButton" name="read_version_button">
+  <widget class="QLabel" name="label_7">
    <property name="geometry">
     <rect>
-     <x>370</x>
-     <y>70</y>
-     <width>75</width>
-     <height>23</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>读取版本号</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>40</y>
-     <width>71</width>
+     <x>21</x>
+     <y>91</y>
+     <width>60</width>
      <height>16</height>
     </rect>
    </property>
    <property name="text">
-    <string>端口</string>
+    <string>当前版本</string>
    </property>
   </widget>
-  <widget class="QLabel" name="version_lable">
+  <widget class="QPushButton" name="pushButton_uploadFirmware">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>70</y>
-     <width>61</width>
-     <height>20</height>
+     <x>390</x>
+     <y>80</y>
+     <width>80</width>
+     <height>30</height>
     </rect>
    </property>
-   <property name="text">
-    <string>当前版本号</string>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="version_display">
-   <property name="geometry">
-    <rect>
-     <x>90</x>
-     <y>70</y>
-     <width>271</width>
-     <height>20</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="update_firmware_button">
-   <property name="geometry">
-    <rect>
-     <x>374</x>
-     <y>100</y>
-     <width>71</width>
-     <height>23</height>
-    </rect>
+   <property name="maximumSize">
+    <size>
+     <width>100</width>
+     <height>50</height>
+    </size>
    </property>
    <property name="text">
     <string>升级固件</string>
    </property>
   </widget>
-  <widget class="QComboBox" name="serial_box">
+  <widget class="QLabel" name="label_displayVersion">
    <property name="geometry">
     <rect>
-     <x>90</x>
-     <y>40</y>
-     <width>271</width>
-     <height>22</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="open_button">
-   <property name="geometry">
-    <rect>
-     <x>370</x>
-     <y>40</y>
-     <width>75</width>
-     <height>23</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>打开</string>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="status_display">
-   <property name="geometry">
-    <rect>
-     <x>70</x>
-     <y>160</y>
-     <width>271</width>
+     <x>80</x>
+     <y>90</y>
+     <width>61</width>
      <height>20</height>
     </rect>
    </property>
+   <property name="text">
+    <string/>
+   </property>
   </widget>
-  <widget class="QProgressBar" name="progressBar">
+  <widget class="QLabel" name="label_2">
    <property name="geometry">
     <rect>
-     <x>90</x>
-     <y>100</y>
-     <width>271</width>
+     <x>21</x>
+     <y>221</y>
+     <width>24</width>
      <height>21</height>
     </rect>
    </property>
-   <property name="value">
-    <number>0</number>
+   <property name="text">
+    <string>秘钥</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton_erase">
+  <widget class="QLabel" name="label_3">
    <property name="geometry">
     <rect>
-     <x>70</x>
-     <y>190</y>
-     <width>75</width>
-     <height>23</height>
+     <x>21</x>
+     <y>249</y>
+     <width>24</width>
+     <height>31</height>
     </rect>
    </property>
    <property name="text">
-    <string>erase</string>
+    <string>解密</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton_reset">
+  <widget class="QLabel" name="label_4">
    <property name="geometry">
     <rect>
-     <x>150</x>
-     <y>190</y>
-     <width>75</width>
-     <height>23</height>
+     <x>21</x>
+     <y>278</y>
+     <width>48</width>
+     <height>41</height>
     </rect>
    </property>
    <property name="text">
-    <string>reset</string>
+    <string>账号类型</string>
    </property>
   </widget>
+  <widget class="Line" name="line">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>200</y>
+     <width>451</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEdit_deviceID">
+   <property name="geometry">
+    <rect>
+     <x>80</x>
+     <y>129</y>
+     <width>391</width>
+     <height>31</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_5">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>140</y>
+     <width>36</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>设备ID</string>
+   </property>
+  </widget>
+  <widget class="Line" name="line_2">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>110</y>
+     <width>451</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_readDeviceID">
+   <property name="geometry">
+    <rect>
+     <x>290</x>
+     <y>170</y>
+     <width>80</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>读取设备ID</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_configDeviceID">
+   <property name="geometry">
+    <rect>
+     <x>390</x>
+     <y>170</y>
+     <width>80</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>配置设备ID</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_readAcount">
+   <property name="geometry">
+    <rect>
+     <x>290</x>
+     <y>320</y>
+     <width>80</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="palette">
+    <palette>
+     <active>
+      <colorrole role="WindowText">
+       <brush brushstyle="SolidPattern">
+        <color alpha="255">
+         <red>0</red>
+         <green>0</green>
+         <blue>255</blue>
+        </color>
+       </brush>
+      </colorrole>
+     </active>
+     <inactive>
+      <colorrole role="WindowText">
+       <brush brushstyle="SolidPattern">
+        <color alpha="255">
+         <red>0</red>
+         <green>0</green>
+         <blue>255</blue>
+        </color>
+       </brush>
+      </colorrole>
+     </inactive>
+     <disabled>
+      <colorrole role="WindowText">
+       <brush brushstyle="SolidPattern">
+        <color alpha="255">
+         <red>120</red>
+         <green>120</green>
+         <blue>120</blue>
+        </color>
+       </brush>
+      </colorrole>
+     </disabled>
+    </palette>
+   </property>
+   <property name="text">
+    <string>读取账号信息</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_configAcount">
+   <property name="geometry">
+    <rect>
+     <x>390</x>
+     <y>320</y>
+     <width>80</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>更新账号信息</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_readVersion">
+   <property name="geometry">
+    <rect>
+     <x>290</x>
+     <y>80</y>
+     <width>80</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="palette">
+    <palette>
+     <active>
+      <colorrole role="Text">
+       <brush brushstyle="SolidPattern">
+        <color alpha="255">
+         <red>0</red>
+         <green>0</green>
+         <blue>255</blue>
+        </color>
+       </brush>
+      </colorrole>
+     </active>
+     <inactive>
+      <colorrole role="Text">
+       <brush brushstyle="SolidPattern">
+        <color alpha="255">
+         <red>0</red>
+         <green>0</green>
+         <blue>255</blue>
+        </color>
+       </brush>
+      </colorrole>
+     </inactive>
+     <disabled>
+      <colorrole role="Text">
+       <brush brushstyle="SolidPattern">
+        <color alpha="255">
+         <red>120</red>
+         <green>120</green>
+         <blue>120</blue>
+        </color>
+       </brush>
+      </colorrole>
+     </disabled>
+    </palette>
+   </property>
+   <property name="text">
+    <string>读取版本号</string>
+   </property>
+  </widget>
+  <widget class="QSplitter" name="splitter_2">
+   <property name="geometry">
+    <rect>
+     <x>80</x>
+     <y>220</y>
+     <width>391</width>
+     <height>91</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Vertical</enum>
+   </property>
+   <widget class="QLineEdit" name="lineEdit_acountKey"/>
+   <widget class="QLineEdit" name="lineEdit_acountSecret">
+    <property name="font">
+     <font>
+      <family>Arial</family>
+      <pointsize>8</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>f8a02d47815be2e0985b1230884f3ac227d0b3a7dc8d8243b46464e6094cb945</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEdit_acountType"/>
+  </widget>
+  <widget class="QSplitter" name="splitter_3">
+   <property name="geometry">
+    <rect>
+     <x>80</x>
+     <y>10</y>
+     <width>391</width>
+     <height>61</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Vertical</enum>
+   </property>
+   <widget class="QComboBox" name="comboBox_serialPort"/>
+   <widget class="QComboBox" name="comboBox_serialBaud">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <item>
+     <property name="text">
+      <string>115200</string>
+     </property>
+    </item>
+   </widget>
+  </widget>
+  <widget class="QSplitter" name="splitter">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>10</y>
+     <width>36</width>
+     <height>61</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Vertical</enum>
+   </property>
+   <widget class="QLabel" name="label">
+    <property name="text">
+     <string>端口</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_6">
+    <property name="text">
+     <string>波特率</string>
+    </property>
+   </widget>
+  </widget>
+  <zorder>splitter</zorder>
+  <zorder>splitter_3</zorder>
+  <zorder>label_7</zorder>
+  <zorder>pushButton_uploadFirmware</zorder>
+  <zorder>comboBox_serialPort</zorder>
+  <zorder>label_displayVersion</zorder>
+  <zorder>line</zorder>
+  <zorder>lineEdit_deviceID</zorder>
+  <zorder>label_5</zorder>
+  <zorder>line_2</zorder>
+  <zorder>pushButton_readDeviceID</zorder>
+  <zorder>pushButton_configDeviceID</zorder>
+  <zorder>pushButton_readAcount</zorder>
+  <zorder>pushButton_configAcount</zorder>
+  <zorder>comboBox_serialBaud</zorder>
+  <zorder>label_2</zorder>
+  <zorder>label_3</zorder>
+  <zorder>label_4</zorder>
+  <zorder>pushButton_readVersion</zorder>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
