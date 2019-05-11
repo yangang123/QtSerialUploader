@@ -29,9 +29,7 @@ private slots:
     void showAcount(QList<QString> &acount);
 
 
-    void on_pushButton_erase_clicked();
 
-    void on_pushButton_reset_clicked();
 
     void on_pushButton_readVersion_clicked();
 
@@ -46,6 +44,9 @@ private slots:
     void on_pushButton_configAcount_clicked();
 
 private:
+    void on_pushButton_erase_clicked();
+
+    void on_pushButton_reset_clicked();
     Ui::Dialog *ui;
     RtkConfig *_rtkConfig;
     static Dialog * _instance;

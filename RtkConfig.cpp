@@ -1,5 +1,5 @@
 #include "RtkConfig.h"
-
+#include "crc16.h"
 RtkConfig::RtkConfig(QObject *parent) :
     QObject(parent),
     mTimer (new QTimer()),
@@ -118,7 +118,34 @@ void RtkConfig::sendOnePacket(qint8 cmd)
     _link->writeBytes((const char*)buffer, tx_len);
 }
 
-void RtkConfig::xxx(qint8 cmd, QString &buf)
+void RtkConfig::_packetSend(uint8_t cmd, QByteArray &playload, QByteArray &buf)
+{
+    buf.resize(7);
+    int length = playload.size();
+
+    buf[FW_START1_POS] = FW_HEAD_BYTE_1;
+    buf[FW_START2_POS] = FW_HEAD_BYTE_2;
+    buf[FW_DST_POS]    = 0;
+    buf[FW_SRC_POS]    = 0;
+
+    buf[FW_LEN_L_POS]  = (length+1) & 0xff;
+    buf[FW_LEN_H_POS]  = ((length+1) >> 8) & 0xff;
+    buf[FW_CMD_POS]    = cmd;
+
+    if (length) {
+       buf += playload;
+    }
+
+    uint16_t cksum_pos = FW_PAKET_HEAD_LEN+length;
+    uint16_t cksum;
+    cksum = calc_crc((const uint8_t*)buf.data(), FW_PAKET_HEAD_LEN+length);
+    buf[cksum_pos]   = cksum & 0x00ff;
+    buf[cksum_pos+1] = (cksum >> 8) & 0x00ff;
+    buf[cksum_pos+2] = FW_END_BYTE_1;
+    buf[cksum_pos+3] = FW_END_BYTE_2;
+}
+
+void RtkConfig::sendOnePacket(qint8 cmd, QByteArray &playload)
 {
     if(!_link->isConnect()) {
        QString name;
@@ -127,26 +154,16 @@ void RtkConfig::xxx(qint8 cmd, QString &buf)
             return;
        }
     }
-   // qDebug() << buf;
-QChar buffer1[128];
-    quint8 buffer[128];
-    memset(buffer, 0x00, 128);
-     memset(buffer1, 0x00, 128);
-    quint16 tx_len =0;
-    qDebug() << "x" << buf.size();
-
-    for(uint8_t i = 0; i < buf.size(); i++) {
-        buffer1[i] = buf.at(i);
-    }
-    pakect_send(cmd, (quint8*)buffer1, buf.size(), (quint8*)buffer, &tx_len);
-    //qDebug() << "len" << tx_len;
-    _link->writeBytes((const char*)buffer, tx_len);
+    QByteArray new_buffer ;
+    _packetSend(cmd, playload, new_buffer);
+    _link->writeBytes((const char*)new_buffer.data(), new_buffer.size());
 }
 
 void RtkConfig::setAcount(QString &acount)
 {
     acount.prepend(acount.size());
-    xxx(FW_UPDATE_ACCOUNT_INFO_SET, acount);
+    QByteArray a = acount.toLatin1();
+    sendOnePacket(FW_UPDATE_ACCOUNT_INFO_SET, a);
 }
 
 void RtkConfig::updateFile(QString &path)

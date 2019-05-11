@@ -11,6 +11,7 @@
 #include "SerialLink.h"
 #include <QFile>
 #include "dialog.h"
+#include <QVariant>
 
 class SerialLink;
 
@@ -45,9 +46,9 @@ private:
     void send_firmwre_file_last_packet();
     void send_firmwre_file();
     void sendOnePacket(qint8 cmd);
-    void xxx(qint8 cmd, QString &buf);
+    void sendOnePacket(qint8 cmd, QByteArray &playload);
     bool sendResetCmdFormBootloader();
-
+    void _packetSend(uint8_t cmd, QByteArray &playload, QByteArray &buf);
 
     SerialLink *_link;
     packet_desc_t mPacket;
