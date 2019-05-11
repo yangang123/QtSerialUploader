@@ -197,9 +197,19 @@ void RtkConfig::open_link(QString &name)
        qDebug() <<  "link open error";
     }
 }
+
 void RtkConfig::setDeviceID(QString &id)
 {
+    qDebug() << id << "size" << id.size();
+    int appendLen= 10 - id.size();
+    qDebug() << id << id.size();
 
+    QByteArray a;
+    a = id.toLatin1();
+    for (qint8 i =0; i < appendLen; i++) {
+        a.append((char)0);
+    }
+    sendOnePacket(FW_UPDATE_SET_DEVICE_ID, a);
 }
 
 void RtkConfig::receiveBytes(LinkInterface *link, QByteArray b)

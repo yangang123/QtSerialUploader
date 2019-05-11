@@ -99,7 +99,6 @@ void Dialog::on_pushButton_reset_clicked()
 
 void Dialog::on_pushButton_readVersion_clicked()
 {
-    qDebug() << "readVersion";
     _rtkConfig->readVersion();
 }
 
@@ -115,7 +114,8 @@ void Dialog::on_pushButton_readDeviceID_clicked()
 
 void Dialog::on_pushButton_configDeviceID_clicked()
 {
-
+    QString id = ui->lineEdit_deviceID->displayText();
+    _rtkConfig->setDeviceID(id);
 }
 
 void Dialog::on_pushButton_readAcount_clicked()
@@ -129,6 +129,5 @@ void Dialog::on_pushButton_configAcount_clicked()
     acount= ui->lineEdit_acountKey->displayText() + ','
             + ui->lineEdit_acountSecret->displayText() + ',' + ','
             + ui->lineEdit_acountType->displayText();
-    //qDebug()<<acount;
    _rtkConfig->setAcount(acount);
 }
