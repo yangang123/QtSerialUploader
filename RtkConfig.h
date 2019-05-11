@@ -24,38 +24,37 @@ public:
     void readDeviceId(){sendOnePacket(FW_UPDATE_GET_DEVICE_ID);}
     void readAcount(){sendOnePacket(FW_UPDATE_ACCOUNT_INFO_GET);}
     void updateFile(QString &path);
-    void sendErase();
-    void sendReset();
-    void open_link(QString &name);
+    void sendErase(){sendOnePacket(FW_UPDATE_ERASE);}
     void setDeviceID(QString &id);
     void setAcount(QString &acount);
+    void sendReset();
 
 signals:
     void sendStatusStr(QString &status);
     void sendDeviceIdStr(QString &id);
     void sendAcountStr( QList<QString> &acount);
     void sendProgressValue(int value);
+
 public slots:
     void update();
     void receiveBytes(LinkInterface *link, QByteArray b);
 
 private:
-    int  send_file(void);
-    void send_firmwre_file_one_packet(char*p, qint16 len);
-    void send_firmwre_file_packet();
-    void send_firmwre_file_last_packet();
-    void send_firmwre_file();
+    void sendFirmwareFileOnePacket(char*p, qint16 len);
+    void sendFirmwareFilePacket();
+    void sendFirmwareFileLastPacket();
+    void sendFirmwareFile();
     void sendOnePacket(qint8 cmd);
     void sendOnePacket(qint8 cmd, QByteArray &playload);
-    bool sendResetCmdFormBootloader();
-    void _packetSend(uint8_t cmd, QByteArray &playload, QByteArray &buf);
+    void sendResetCmdFormBootloader(){sendOnePacket(FW_UPDATE_RESET);}
+    void packetSend(uint8_t cmd, QByteArray &playload, QByteArray &buf);
 
     SerialLink *_link;
     packet_desc_t mPacket;
     QByteArray buffer_read;
     qint16 last_packet;
     QTimer *_timer;
-   qint8 update_req;
+    qint8 update_req;
     qint16 update_i;
     fw_packet_t _firmware_data;
     bool packetReplyOk;

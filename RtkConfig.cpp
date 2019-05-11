@@ -16,10 +16,10 @@ RtkConfig::RtkConfig(QObject *parent) :
 
 void RtkConfig::update()
 {
-    send_firmwre_file();
+    sendFirmwareFile();
 }
 
-void RtkConfig::send_firmwre_file_one_packet(char*p, qint16 len)
+void RtkConfig::sendFirmwareFileOnePacket(char*p, qint16 len)
 {
     quint16 tx_len = 0;
     char buffer_ret[IAP_CONFIG_PACKET_BUFSIZE];
@@ -30,24 +30,24 @@ void RtkConfig::send_firmwre_file_one_packet(char*p, qint16 len)
     _link->writeBytes((const char*)buffer_ret, tx_len);
 }
 
-void RtkConfig::send_firmwre_file_packet()
+void RtkConfig::sendFirmwareFilePacket()
 {
     char *p = buffer_read.data();
     char *p1 = p + (_firmware_data.cur_block-1) * 512;
-    send_firmwre_file_one_packet(p1, 512);
+    sendFirmwareFileOnePacket(p1, 512);
     qDebug("total: %d, cur:%d, len:%d\r\n", _firmware_data.total_block, _firmware_data.cur_block,_firmware_data.block_len);
     _firmware_data.cur_block++;
 }
 
-void RtkConfig::send_firmwre_file_last_packet()
+void RtkConfig::sendFirmwareFileLastPacket()
 {
     _firmware_data.cur_block = _firmware_data.total_block;
     char *p = buffer_read.data();
     char *p1 = p + (_firmware_data.total_block-1) * 512;
-    send_firmwre_file_one_packet(p1, last_packet);
+    sendFirmwareFileOnePacket(p1, last_packet);
 }
 
-void RtkConfig::send_firmwre_file()
+void RtkConfig::sendFirmwareFile()
 {
     if (packetReplyOk) {
         if (update_req ==1) {
@@ -63,7 +63,7 @@ void RtkConfig::send_firmwre_file()
     }
 
     if (update_i < (_firmware_data.total_block -1)) {
-        send_firmwre_file_packet();
+        sendFirmwareFilePacket();
         QString output1 = QString("total_block:%1.").arg((int)_firmware_data.total_block);
         QString output2 = QString("cur_block:%1.").arg((int)_firmware_data.cur_block);
         QString output3 = QString("block_len:%1").arg((int)_firmware_data.block_len);
@@ -72,7 +72,7 @@ void RtkConfig::send_firmwre_file()
         int value = ((float)_firmware_data.cur_block/_firmware_data.total_block) *100;
         emit sendProgressValue(value);
     } else if(update_i == _firmware_data.total_block){
-        send_firmwre_file_last_packet();
+        sendFirmwareFileLastPacket();
         update_req = false;
         update_i = 0;
         sendResetCmdFormBootloader();
@@ -82,30 +82,24 @@ void RtkConfig::send_firmwre_file()
     update_i++;
 }
 
-bool RtkConfig::sendResetCmdFormBootloader()
-{
-
-    quint8 buffer[20];
-    quint16 tx_len =0;
-
-    pakect_send(FW_UPDATE_RESET, (quint8*)0, 0, (quint8*)buffer, &tx_len);
-    _link->writeBytes((const char*)buffer, tx_len);
-    return true;
-}
-
 void RtkConfig::sendReset()
 {
-   char* command = "reboot\r\n";
-   _link->writeBytes((const char*)command, 8);
-}
+    if(!_link->isConnect()) {
+       QString name;
+       Dialog::getInstance()->getSerialName(name);
+       if (!_link->connectLink(name)) {
+            return;
+       }
+    } if(!_link->isConnect()) {
+        QString name;
+        Dialog::getInstance()->getSerialName(name);
+        if (!_link->connectLink(name)) {
+             return;
+        }
+     }
 
-void RtkConfig::sendErase()
-{
-    qDebug() << "erase";
-    quint8 buffer[20];
-    quint16 tx_len =0;
-    pakect_send(FW_UPDATE_ERASE, (quint8*)0, 0, (quint8*)buffer, &tx_len);
-    _link->writeBytes((const char*)buffer, tx_len);
+    char* command = "reboot\r\n";
+    _link->writeBytes((const char*)command, 8);
 }
 
 void RtkConfig::sendOnePacket(qint8 cmd)
@@ -124,7 +118,7 @@ void RtkConfig::sendOnePacket(qint8 cmd)
     _link->writeBytes((const char*)buffer, tx_len);
 }
 
-void RtkConfig::_packetSend(uint8_t cmd, QByteArray &playload, QByteArray &buf)
+void RtkConfig::packetSend(uint8_t cmd, QByteArray &playload, QByteArray &buf)
 {
     buf.resize(7);
     int length = playload.size();
@@ -161,7 +155,7 @@ void RtkConfig::sendOnePacket(qint8 cmd, QByteArray &playload)
        }
     }
     QByteArray new_buffer ;
-    _packetSend(cmd, playload, new_buffer);
+    packetSend(cmd, playload, new_buffer);
     _link->writeBytes((const char*)new_buffer.data(), new_buffer.size());
 }
 
@@ -269,9 +263,6 @@ void RtkConfig::receiveBytes(LinkInterface *link, QByteArray b)
                     deviceID.clear();
                 }
                 emit sendAcountStr(acount);
-//                for (qint8 i = 0; i< acount.size(); i++) {
-//                    qDebug() << acount.at(i);
-//                }
                 break;
             }
        }

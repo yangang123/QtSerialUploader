@@ -336,7 +336,7 @@
    </property>
    <widget class="QLineEdit" name="lineEdit_acountKey">
     <property name="text">
-     <string>1111</string>
+     <string/>
     </property>
    </widget>
    <widget class="QLineEdit" name="lineEdit_acountSecret">

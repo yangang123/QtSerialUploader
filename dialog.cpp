@@ -21,10 +21,6 @@ Dialog::Dialog(QWidget *parent) :
         ui->comboBox_serialPort->addItem(serialPortItemName);
     }
 
-//    _thread = new QThread();
-//    _rtkConfig->moveToThread(_thread);
-//    _thread->start();
-
     connect(_rtkConfig, &RtkConfig::sendStatusStr, this, &Dialog::showStatus);
     connect(_rtkConfig, &RtkConfig::sendDeviceIdStr, this, &Dialog::showDeviceID);
     connect(_rtkConfig, &RtkConfig::sendAcountStr, this, &Dialog::showAcount);
@@ -71,16 +67,6 @@ void Dialog::showAcount(QList<QString> &acount)
         ui->lineEdit_acountSecret->setText(acount.at(1));
         ui->lineEdit_acountType->setText(acount.at(2));
     }
-}
-
-void Dialog::on_pushButton_erase_clicked()
-{
-     _rtkConfig->sendErase();
-}
-
-void Dialog::on_pushButton_reset_clicked()
-{
-    _rtkConfig->sendReset();
 }
 
 void Dialog::on_pushButton_readVersion_clicked()
