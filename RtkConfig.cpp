@@ -69,17 +69,13 @@ void RtkConfig::send_firmwre_file()
         QString output3 = QString("block_len:%1").arg((int)_firmware_data.block_len);
         output1 +=  output2;
         output1 +=  output3;
-        //ui->status_display->setText(output1);
         int value = ((float)_firmware_data.cur_block/_firmware_data.total_block) *100;
-        //ui->progressBar->setValue(value);
-
+        emit sendProgressValue(value);
     } else if(update_i == _firmware_data.total_block){
         send_firmwre_file_last_packet();
         update_req = false;
         update_i = 0;
-
         sendResetCmdFormBootloader();
-
         return;
     }
 

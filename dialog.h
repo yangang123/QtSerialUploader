@@ -27,6 +27,7 @@ private slots:
     void showStatus(QString &status);
     void showDeviceID(QString &id);
     void showAcount(QList<QString> &acount);
+    void showProgress(int value);
 
     void on_pushButton_readVersion_clicked();
 

@@ -28,11 +28,17 @@ Dialog::Dialog(QWidget *parent) :
     connect(_rtkConfig, &RtkConfig::sendStatusStr, this, &Dialog::showStatus);
     connect(_rtkConfig, &RtkConfig::sendDeviceIdStr, this, &Dialog::showDeviceID);
     connect(_rtkConfig, &RtkConfig::sendAcountStr, this, &Dialog::showAcount);
+    connect(_rtkConfig, &RtkConfig::sendProgressValue, this, &Dialog::showProgress);
 }
 
 Dialog::~Dialog()
 {
     delete ui;
+}
+
+void Dialog::showProgress(int value)
+{
+    ui->progressBar_upload->setValue(value);
 }
 
 Dialog* Dialog::getInstance()

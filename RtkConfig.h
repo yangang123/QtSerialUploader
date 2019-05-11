@@ -34,7 +34,7 @@ signals:
     void sendStatusStr(QString &status);
     void sendDeviceIdStr(QString &id);
     void sendAcountStr( QList<QString> &acount);
-
+    void sendProgressValue(int value);
 public slots:
     void update();
     void receiveBytes(LinkInterface *link, QByteArray b);
