@@ -10,6 +10,7 @@
 #include <QDebug>
 #include "SerialLink.h"
 #include <QFile>
+#include "dialog.h"
 
 class SerialLink;
 
@@ -18,15 +19,18 @@ class RtkConfig : public QObject
     Q_OBJECT
 public:
     explicit RtkConfig(QObject *parent = 0);
-    void readVersion();
+    void readVersion() {sendOnePacket(FW_UPDATE_VERREQ);}
+    void readDeviceId(){sendOnePacket(FW_UPDATE_GET_DEVICE_ID);}
+    void readAcount(){sendOnePacket(FW_UPDATE_ACCOUNT_INFO_GET);}
     void updateFile(QString &path);
     void sendErase();
     void sendReset();
     void open_link(QString &name);
-    SerialLink *_link;
+
 signals:
     void sendStatusStr(QString &status);
-
+    void sendDeviceIdStr(QString &id);
+    void sendAcountStr( QList<QString> &acount);
 
 public slots:
     void update();
@@ -38,11 +42,11 @@ private:
     void send_firmwre_file_packet();
     void send_firmwre_file_last_packet();
     void send_firmwre_file();
-
+    void sendOnePacket(qint8 cmd);
     bool sendResetCmdFormBootloader();
 
 
-
+    SerialLink *_link;
     packet_desc_t mPacket;
     QByteArray buffer_read;
     qint16 last_packet;

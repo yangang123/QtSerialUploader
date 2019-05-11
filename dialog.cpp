@@ -6,6 +6,8 @@
 #include <QFileDialog>
 #include "packet.h"
 
+Dialog * Dialog::_instance = 0;
+
 Dialog::Dialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::Dialog),
@@ -19,41 +21,70 @@ Dialog::Dialog(QWidget *parent) :
         ui->comboBox_serialPort->addItem(serialPortItemName);
     }
 
-   connect(_rtkConfig, &RtkConfig::sendStatusStr, this, &Dialog::statusStrShow);
-
-   QObject::connect(_rtkConfig->_link,&SerialLink::bytesReceived, _rtkConfig, &RtkConfig::receiveBytes);
+   connect(_rtkConfig, &RtkConfig::sendStatusStr, this, &Dialog::showStatus);
+   connect(_rtkConfig, &RtkConfig::sendDeviceIdStr, this, &Dialog::showDeviceID);
+   connect(_rtkConfig, &RtkConfig::sendAcountStr, this, &Dialog::showAcount);
 }
 
 Dialog::~Dialog()
 {
     delete ui;
 }
-void Dialog::on_open_button_clicked()
+
+Dialog* Dialog::getInstance()
 {
-   QString name =ui->comboBox_serialPort->currentText();
-   qDebug() << "name" << name;
-   _rtkConfig->open_link(name);
+    if (_instance == NULL)  {
+        _instance = new Dialog();
+    }
+    return _instance;
 }
 
-void Dialog::on_read_version_button_clicked()
+
+//void Dialog::on_open_button_clicked()
+//{
+//   QString name =ui->comboBox_serialPort->currentText();
+//   qDebug() << "name" << name;
+//   _rtkConfig->open_link(name);
+//}
+
+//void Dialog::on_read_version_button_clicked()
+//{
+//    qDebug() << "readVersion";
+//    _rtkConfig->readVersion();
+//}
+
+//void Dialog::on_update_firmware_button_clicked()
+//{
+//    QFileDialog *fileDialog = new QFileDialog(this);
+//    if(fileDialog->exec() == QDialog::Accepted) {
+//        QString path = fileDialog->selectedFiles()[0];
+//        qDebug() << "path" << path;
+//        _rtkConfig->updateFile(path);
+//     }
+//}
+
+void Dialog::getSerialName(QString &name)
 {
-    qDebug() << "readVersion";
-    _rtkConfig->readVersion();
+    name = ui->comboBox_serialPort->currentText();
 }
 
-void Dialog::on_update_firmware_button_clicked()
-{
-    QFileDialog *fileDialog = new QFileDialog(this);
-    if(fileDialog->exec() == QDialog::Accepted) {
-        QString path = fileDialog->selectedFiles()[0];
-        qDebug() << "path" << path;
-        _rtkConfig->updateFile(path);
-     }
-}
-
-void Dialog::statusStrShow(QString &status)
+void Dialog::showStatus(QString &status)
 {
      ui->label_displayVersion->setText(status);
+}
+
+void Dialog::showDeviceID(QString &id)
+{
+     ui->lineEdit_deviceID->setText(id);
+}
+
+void Dialog::showAcount(QList<QString> &acount)
+{
+    if (acount.size()>=3 ) {
+        ui->lineEdit_acountKey->setText(acount.at(0));
+        ui->lineEdit_acountSecret->setText(acount.at(1));
+        ui->lineEdit_acountType->setText(acount.at(2));
+    }
 }
 
 void Dialog::on_pushButton_erase_clicked()
@@ -68,7 +99,8 @@ void Dialog::on_pushButton_reset_clicked()
 
 void Dialog::on_pushButton_readVersion_clicked()
 {
-
+    qDebug() << "readVersion";
+    _rtkConfig->readVersion();
 }
 
 void Dialog::on_pushButton_uploadFirmware_clicked()
@@ -78,7 +110,7 @@ void Dialog::on_pushButton_uploadFirmware_clicked()
 
 void Dialog::on_pushButton_readDeviceID_clicked()
 {
-
+    _rtkConfig->readDeviceId();
 }
 
 void Dialog::on_pushButton_configDeviceID_clicked()
@@ -88,7 +120,7 @@ void Dialog::on_pushButton_configDeviceID_clicked()
 
 void Dialog::on_pushButton_readAcount_clicked()
 {
-
+     _rtkConfig->readAcount();
 }
 
 void Dialog::on_pushButton_configAcount_clicked()

@@ -18,6 +18,8 @@ class SerialLink : public LinkInterface
 public:
     explicit SerialLink();
     bool connectLink(QString &name);
+    bool disconnect();
+    bool isConnect();
 
 signals:
       void bytesReceived(LinkInterface *link, QByteArray data);
@@ -29,8 +31,7 @@ public slots:
 private:
       QSerialPort *mSerialPort;
       QString portName;
-      bool mIsOpen;
-      bool mFirstOpen;
+      bool isOpen;
 };
 
 #endif // SERIALLINK_H

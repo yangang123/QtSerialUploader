@@ -10,7 +10,7 @@ RtkConfig::RtkConfig(QObject *parent) :
     memset((void*)&mPacket, 0x00, (size_t)sizeof(packet_desc_t));
     memset((void*)&_firmware_data, 0x00, (size_t)sizeof(fw_packet_t));
 
-
+     QObject::connect(_link,&SerialLink::bytesReceived, this, &RtkConfig::receiveBytes);
 }
 
 void RtkConfig::update()
@@ -102,14 +102,23 @@ void RtkConfig::sendErase()
     _link->writeBytes((const char*)buffer, tx_len);
 }
 
-void RtkConfig::readVersion()
+void RtkConfig::sendOnePacket(qint8 cmd)
 {
-    qDebug() << "readVersion";
+    if(!_link->isConnect()) {
+       QString name;
+       Dialog::getInstance()->getSerialName(name);
+       if (!_link->connectLink(name)) {
+            return;
+       }
+    }
+
+    qDebug() << "readDeviceId";
     quint8 buffer[20];
     quint16 tx_len =0;
-    pakect_send(FW_UPDATE_VERREQ, (quint8*)0, 0, (quint8*)buffer, &tx_len);
+    pakect_send(cmd, (quint8*)0, 0, (quint8*)buffer, &tx_len);
     _link->writeBytes((const char*)buffer, tx_len);
 }
+
 
 void RtkConfig::updateFile(QString &path)
 {
@@ -145,30 +154,63 @@ void RtkConfig::open_link(QString &name)
 
 void RtkConfig::receiveBytes(LinkInterface *link, QByteArray b)
 {
-       qDebug() << "size" << b.size();
+    qDebug()<< "size" << b.size();
 
-        char *buf = b.data();
-        for (int i = 0; i < b.size(); i++ ) {
-             if(packet_parse_data_callback(buf[i], &mPacket)) {
-                 quint8 cmd = mPacket.data[0];
+    QString output1;
+    QList<QString> acount;
+    QString deviceID;
+    char *buf = b.data();
+    for (int i = 0; i < b.size(); i++ ) {
+        if(packet_parse_data_callback(buf[i], &mPacket)) {
+            quint8 cmd = mPacket.data[0];
+            switch(cmd) {
+                case FW_UPDATE_OK:
+                qDebug() << "OK";
+                packetReplyOk = true;
+                break;
 
-                 switch(cmd) {
-                 case FW_UPDATE_OK:
-                      qDebug() << "OK";
-                      packetReplyOk = true;
-                      break;
+            case FW_UPDATE_VERREPLY:
+                output1.append(mPacket.data[13]);
+                output1.append('.');
+                output1.append(mPacket.data[15]);
+                output1.append('.');
+                output1.append(mPacket.data[16]);
+                qDebug() << output1;
+                emit sendStatusStr(output1);
+                break;
 
-                 case FW_UPDATE_VERREPLY:
-                     QString output1;
-                     output1.append(mPacket.data[13]);
-                     output1.append('.');
-                     output1.append(mPacket.data[15]);
-                     output1.append('.');
-                     output1.append(mPacket.data[16]);
-                     qDebug() << output1;
-                     emit sendStatusStr(output1);
-                     break;
-                  }
-             }
-        }
+            case FW_UPDATE_REPLY_DEVICE_ID:
+                for (qint8 i = 0; i < 10; i++ ){
+                if (mPacket.data[1+i] != '\0') {
+                    deviceID.append(mPacket.data[1+i]);
+                    }
+                }
+                qDebug() << deviceID;
+                emit sendDeviceIdStr(deviceID);
+                break;
+
+            case FW_UPDATE_ACCOUNT_INFO_REPLY:
+                mPacket.data[2] = mPacket.data[2];
+                for (int i = 0; i < mPacket.data[1]; i++) {
+                    if (mPacket.data[2+i] != ',') {
+                        deviceID.append(mPacket.data[2+i]);
+                    } else if (mPacket.data[2+i] == ','){
+                        if (deviceID.size() > 0) {
+                            acount.append(deviceID);
+                            deviceID.clear();
+                        }
+                    }
+                }
+                if (deviceID.size() > 0) {
+                    acount.append(deviceID);
+                    deviceID.clear();
+                }
+                emit sendAcountStr(acount);
+//                for (qint8 i = 0; i< acount.size(); i++) {
+//                    qDebug() << acount.at(i);
+//                }
+                break;
+            }
+       }
+   }
 }

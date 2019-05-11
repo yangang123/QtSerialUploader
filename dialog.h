@@ -20,14 +20,13 @@ class Dialog : public QDialog
 public:
     explicit Dialog(QWidget *parent = 0);
     ~Dialog();
-     RtkConfig *_rtkConfig;
+    void getSerialName(QString &name);
+    static Dialog* getInstance();
 
 private slots:
-    void on_open_button_clicked();
-    void on_read_version_button_clicked();
-    void on_update_firmware_button_clicked();
-
-    void statusStrShow(QString &status);
+    void showStatus(QString &status);
+    void showDeviceID(QString &id);
+    void showAcount(QList<QString> &acount);
 
 
     void on_pushButton_erase_clicked();
@@ -48,8 +47,11 @@ private slots:
 
 private:
     Ui::Dialog *ui;
+    RtkConfig *_rtkConfig;
+    static Dialog * _instance;
 };
 
+extern Dialog* uploadApp(void);
 
 
 #endif // DIALOG_H

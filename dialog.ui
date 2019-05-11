@@ -343,7 +343,7 @@
      </font>
     </property>
     <property name="text">
-     <string>f8a02d47815be2e0985b1230884f3ac227d0b3a7dc8d8243b46464e6094cb945</string>
+     <string/>
     </property>
    </widget>
    <widget class="QLineEdit" name="lineEdit_acountType"/>
@@ -395,11 +395,11 @@
     </property>
    </widget>
   </widget>
+  <zorder>splitter_2</zorder>
   <zorder>splitter</zorder>
   <zorder>splitter_3</zorder>
   <zorder>label_7</zorder>
   <zorder>pushButton_uploadFirmware</zorder>
-  <zorder>comboBox_serialPort</zorder>
   <zorder>label_displayVersion</zorder>
   <zorder>line</zorder>
   <zorder>lineEdit_deviceID</zorder>
@@ -409,7 +409,6 @@
   <zorder>pushButton_configDeviceID</zorder>
   <zorder>pushButton_readAcount</zorder>
   <zorder>pushButton_configAcount</zorder>
-  <zorder>comboBox_serialBaud</zorder>
   <zorder>label_2</zorder>
   <zorder>label_3</zorder>
   <zorder>label_4</zorder>
