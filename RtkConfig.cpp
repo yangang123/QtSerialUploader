@@ -112,13 +112,42 @@ void RtkConfig::sendOnePacket(qint8 cmd)
        }
     }
 
-    qDebug() << "readDeviceId";
     quint8 buffer[20];
     quint16 tx_len =0;
     pakect_send(cmd, (quint8*)0, 0, (quint8*)buffer, &tx_len);
     _link->writeBytes((const char*)buffer, tx_len);
 }
 
+void RtkConfig::xxx(qint8 cmd, QString &buf)
+{
+    if(!_link->isConnect()) {
+       QString name;
+       Dialog::getInstance()->getSerialName(name);
+       if (!_link->connectLink(name)) {
+            return;
+       }
+    }
+   // qDebug() << buf;
+QChar buffer1[128];
+    quint8 buffer[128];
+    memset(buffer, 0x00, 128);
+     memset(buffer1, 0x00, 128);
+    quint16 tx_len =0;
+    qDebug() << "x" << buf.size();
+
+    for(uint8_t i = 0; i < buf.size(); i++) {
+        buffer1[i] = buf.at(i);
+    }
+    pakect_send(cmd, (quint8*)buffer1, buf.size(), (quint8*)buffer, &tx_len);
+    //qDebug() << "len" << tx_len;
+    _link->writeBytes((const char*)buffer, tx_len);
+}
+
+void RtkConfig::setAcount(QString &acount)
+{
+    acount.prepend(acount.size());
+    xxx(FW_UPDATE_ACCOUNT_INFO_SET, acount);
+}
 
 void RtkConfig::updateFile(QString &path)
 {
@@ -150,6 +179,10 @@ void RtkConfig::open_link(QString &name)
     if (!_link->connectLink(name)) {
        qDebug() <<  "link open error";
     }
+}
+void RtkConfig::setDeviceID(QString &id)
+{
+
 }
 
 void RtkConfig::receiveBytes(LinkInterface *link, QByteArray b)

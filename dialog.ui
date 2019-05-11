@@ -334,7 +334,11 @@
    <property name="orientation">
     <enum>Qt::Vertical</enum>
    </property>
-   <widget class="QLineEdit" name="lineEdit_acountKey"/>
+   <widget class="QLineEdit" name="lineEdit_acountKey">
+    <property name="text">
+     <string>1111</string>
+    </property>
+   </widget>
    <widget class="QLineEdit" name="lineEdit_acountSecret">
     <property name="font">
      <font>

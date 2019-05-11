@@ -26,6 +26,8 @@ public:
     void sendErase();
     void sendReset();
     void open_link(QString &name);
+    void setDeviceID(QString &id);
+    void setAcount(QString &acount);
 
 signals:
     void sendStatusStr(QString &status);
@@ -43,6 +45,7 @@ private:
     void send_firmwre_file_last_packet();
     void send_firmwre_file();
     void sendOnePacket(qint8 cmd);
+    void xxx(qint8 cmd, QString &buf);
     bool sendResetCmdFormBootloader();
 
 

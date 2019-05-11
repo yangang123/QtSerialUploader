@@ -125,5 +125,10 @@ void Dialog::on_pushButton_readAcount_clicked()
 
 void Dialog::on_pushButton_configAcount_clicked()
 {
-
+    QString acount;
+    acount= ui->lineEdit_acountKey->displayText() + ','
+            + ui->lineEdit_acountSecret->displayText() + ',' + ','
+            + ui->lineEdit_acountType->displayText();
+    //qDebug()<<acount;
+   _rtkConfig->setAcount(acount);
 }
