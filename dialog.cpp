@@ -21,9 +21,13 @@ Dialog::Dialog(QWidget *parent) :
         ui->comboBox_serialPort->addItem(serialPortItemName);
     }
 
-   connect(_rtkConfig, &RtkConfig::sendStatusStr, this, &Dialog::showStatus);
-   connect(_rtkConfig, &RtkConfig::sendDeviceIdStr, this, &Dialog::showDeviceID);
-   connect(_rtkConfig, &RtkConfig::sendAcountStr, this, &Dialog::showAcount);
+//    _thread = new QThread();
+//    _rtkConfig->moveToThread(_thread);
+//    _thread->start();
+
+    connect(_rtkConfig, &RtkConfig::sendStatusStr, this, &Dialog::showStatus);
+    connect(_rtkConfig, &RtkConfig::sendDeviceIdStr, this, &Dialog::showDeviceID);
+    connect(_rtkConfig, &RtkConfig::sendAcountStr, this, &Dialog::showAcount);
 }
 
 Dialog::~Dialog()
@@ -38,30 +42,6 @@ Dialog* Dialog::getInstance()
     }
     return _instance;
 }
-
-
-//void Dialog::on_open_button_clicked()
-//{
-//   QString name =ui->comboBox_serialPort->currentText();
-//   qDebug() << "name" << name;
-//   _rtkConfig->open_link(name);
-//}
-
-//void Dialog::on_read_version_button_clicked()
-//{
-//    qDebug() << "readVersion";
-//    _rtkConfig->readVersion();
-//}
-
-//void Dialog::on_update_firmware_button_clicked()
-//{
-//    QFileDialog *fileDialog = new QFileDialog(this);
-//    if(fileDialog->exec() == QDialog::Accepted) {
-//        QString path = fileDialog->selectedFiles()[0];
-//        qDebug() << "path" << path;
-//        _rtkConfig->updateFile(path);
-//     }
-//}
 
 void Dialog::getSerialName(QString &name)
 {
@@ -104,7 +84,12 @@ void Dialog::on_pushButton_readVersion_clicked()
 
 void Dialog::on_pushButton_uploadFirmware_clicked()
 {
-
+    QFileDialog *fileDialog = new QFileDialog(this);
+    if(fileDialog->exec() == QDialog::Accepted) {
+        QString path = fileDialog->selectedFiles()[0];
+        qDebug() << "path" << path;
+        _rtkConfig->updateFile(path);
+    }
 }
 
 void Dialog::on_pushButton_readDeviceID_clicked()

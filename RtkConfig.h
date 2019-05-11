@@ -54,8 +54,8 @@ private:
     packet_desc_t mPacket;
     QByteArray buffer_read;
     qint16 last_packet;
-    QTimer *mTimer;
-    bool update_req;
+    QTimer *_timer;
+   qint8 update_req;
     qint16 update_i;
     fw_packet_t _firmware_data;
     bool packetReplyOk;

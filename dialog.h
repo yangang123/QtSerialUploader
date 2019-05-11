@@ -28,9 +28,6 @@ private slots:
     void showDeviceID(QString &id);
     void showAcount(QList<QString> &acount);
 
-
-
-
     void on_pushButton_readVersion_clicked();
 
     void on_pushButton_uploadFirmware_clicked();
@@ -50,6 +47,7 @@ private:
     Ui::Dialog *ui;
     RtkConfig *_rtkConfig;
     static Dialog * _instance;
+    QThread *_thread;
 };
 
 extern Dialog* uploadApp(void);

@@ -2,7 +2,7 @@
 #include "crc16.h"
 RtkConfig::RtkConfig(QObject *parent) :
     QObject(parent),
-    mTimer (new QTimer()),
+    _timer (new QTimer()),
     update_req(false),
     update_i(0)
 {
@@ -10,7 +10,8 @@ RtkConfig::RtkConfig(QObject *parent) :
     memset((void*)&mPacket, 0x00, (size_t)sizeof(packet_desc_t));
     memset((void*)&_firmware_data, 0x00, (size_t)sizeof(fw_packet_t));
 
-     QObject::connect(_link,&SerialLink::bytesReceived, this, &RtkConfig::receiveBytes);
+    QObject::connect(_link,&SerialLink::bytesReceived, this, &RtkConfig::receiveBytes);
+    connect(_timer, SIGNAL(timeout()), this, SLOT(update()));
 }
 
 void RtkConfig::update()
@@ -48,7 +49,16 @@ void RtkConfig::send_firmwre_file_last_packet()
 
 void RtkConfig::send_firmwre_file()
 {
-    if (!update_req){
+    if (packetReplyOk) {
+        if (update_req ==1) {
+            update_req = 2;
+            qDebug() << "replay";
+            update_i = 0;
+        }
+        packetReplyOk = false;
+    }
+
+    if (!(update_req==2)){
         return;
     }
 
@@ -187,15 +197,12 @@ void RtkConfig::updateFile(QString &path)
     qDebug() << "firmware total_block:" <<_firmware_data.total_block << "len" << _firmware_data.block_len;
     qDebug() << "filesize:" << filesize  << "last_packet" << last_packet;
 
-    update_req = true;
-    update_i = 0;
-}
-
-void RtkConfig::open_link(QString &name)
-{
-    if (!_link->connectLink(name)) {
-       qDebug() <<  "link open error";
-    }
+    sendReset();
+    QThread::msleep(500);
+    packetReplyOk = false;
+    update_req = 1;
+    sendErase();
+     _timer->start(200);
 }
 
 void RtkConfig::setDeviceID(QString &id)
