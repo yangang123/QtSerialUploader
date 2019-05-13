@@ -17,7 +17,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>串口配置工具</string>
+   <string>串口配置工具V1.0 闫刚 1865168353</string>
   </property>
   <property name="windowIcon">
    <iconset resource="res.qrc">
