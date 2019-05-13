@@ -8,10 +8,11 @@
 #include <QThread>
 #include <QTimer>
 #include <QDebug>
-#include "SerialLink.h"
 #include <QFile>
-#include "dialog.h"
 #include <QVariant>
+
+#include "mainwindow.h"
+#include "SerialLink.h"
 
 class SerialLink;
 
@@ -34,6 +35,7 @@ signals:
     void sendDeviceIdStr(QString &id);
     void sendAcountStr( QList<QString> &acount);
     void sendProgressValue(int value);
+    void sendConfigDeviceID();
 
 public slots:
     void update();
@@ -46,8 +48,8 @@ private:
     void sendFirmwareFile();
     void sendOnePacket(qint8 cmd);
     void sendOnePacket(qint8 cmd, QByteArray &playload);
-    void sendResetCmdFormBootloader(){sendOnePacket(FW_UPDATE_RESET);}
-    void packetSend(uint8_t cmd, QByteArray &playload, QByteArray &buf);
+    void sendResetCmdFormBootloader(){configDeviceIdStatusEnable = true;sendOnePacket(FW_UPDATE_RESET);}
+    void sendPacket(uint8_t cmd, QByteArray &playload, QByteArray &buf);
 
     SerialLink *_link;
     packet_desc_t mPacket;
@@ -58,6 +60,7 @@ private:
     qint16 update_i;
     fw_packet_t _firmware_data;
     bool packetReplyOk;
+    bool configDeviceIdStatusEnable;
 };
 
 #endif // RTKCONFIG_H

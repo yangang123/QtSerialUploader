@@ -1,5 +1,6 @@
 #include "RtkConfig.h"
 #include "crc16.h"
+
 RtkConfig::RtkConfig(QObject *parent) :
     QObject(parent),
     _timer (new QTimer()),
@@ -9,6 +10,7 @@ RtkConfig::RtkConfig(QObject *parent) :
     _link = new SerialLink();
     memset((void*)&mPacket, 0x00, (size_t)sizeof(packet_desc_t));
     memset((void*)&_firmware_data, 0x00, (size_t)sizeof(fw_packet_t));
+    configDeviceIdStatusEnable = false;
 
     QObject::connect(_link,&SerialLink::bytesReceived, this, &RtkConfig::receiveBytes);
     connect(_timer, SIGNAL(timeout()), this, SLOT(update()));
@@ -86,19 +88,19 @@ void RtkConfig::sendReset()
 {
     if(!_link->isConnect()) {
        QString name;
-       Dialog::getInstance()->getSerialName(name);
+       MainWindow::getInstance()->getSerialName(name);
        if (!_link->connectLink(name)) {
             return;
        }
     } if(!_link->isConnect()) {
         QString name;
-        Dialog::getInstance()->getSerialName(name);
+        MainWindow::getInstance()->getSerialName(name);
         if (!_link->connectLink(name)) {
              return;
         }
      }
 
-    char* command = "reboot\r\n";
+    const char* command = "reboot\r\n";
     _link->writeBytes((const char*)command, 8);
 }
 
@@ -106,7 +108,7 @@ void RtkConfig::sendOnePacket(qint8 cmd)
 {
     if(!_link->isConnect()) {
        QString name;
-       Dialog::getInstance()->getSerialName(name);
+       MainWindow::getInstance()->getSerialName(name);
        if (!_link->connectLink(name)) {
             return;
        }
@@ -118,7 +120,7 @@ void RtkConfig::sendOnePacket(qint8 cmd)
     _link->writeBytes((const char*)buffer, tx_len);
 }
 
-void RtkConfig::packetSend(uint8_t cmd, QByteArray &playload, QByteArray &buf)
+void RtkConfig::sendPacket(uint8_t cmd, QByteArray &playload, QByteArray &buf)
 {
     buf.resize(7);
     int length = playload.size();
@@ -149,13 +151,13 @@ void RtkConfig::sendOnePacket(qint8 cmd, QByteArray &playload)
 {
     if(!_link->isConnect()) {
        QString name;
-       Dialog::getInstance()->getSerialName(name);
+       MainWindow::getInstance()->getSerialName(name);
        if (!_link->connectLink(name)) {
             return;
        }
     }
     QByteArray new_buffer ;
-    packetSend(cmd, playload, new_buffer);
+    sendPacket(cmd, playload, new_buffer);
     _link->writeBytes((const char*)new_buffer.data(), new_buffer.size());
 }
 
@@ -197,22 +199,20 @@ void RtkConfig::updateFile(QString &path)
 
 void RtkConfig::setDeviceID(QString &id)
 {
-    qDebug() << id << "size" << id.size();
     int appendLen= 10 - id.size();
-    qDebug() << id << id.size();
 
     QByteArray a;
     a = id.toLatin1();
     for (qint8 i =0; i < appendLen; i++) {
         a.append((char)0);
     }
+    configDeviceIdStatusEnable = true;
     sendOnePacket(FW_UPDATE_SET_DEVICE_ID, a);
 }
 
 void RtkConfig::receiveBytes(LinkInterface *link, QByteArray b)
 {
-    qDebug()<< "size" << b.size();
-
+    link = link;
     QString output1;
     QList<QString> acount;
     QString deviceID;
@@ -224,6 +224,10 @@ void RtkConfig::receiveBytes(LinkInterface *link, QByteArray b)
                 case FW_UPDATE_OK:
                 qDebug() << "OK";
                 packetReplyOk = true;
+                if (configDeviceIdStatusEnable) {
+                    emit sendConfigDeviceID();
+                    configDeviceIdStatusEnable = false;
+                }
                 break;
 
             case FW_UPDATE_VERREPLY:

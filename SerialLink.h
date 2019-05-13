@@ -4,13 +4,13 @@
 #include <QObject>
 #include <QDialog>
 #include <QSerialPort>
-#include "packet.h"
 #include <QThread>
 #include <QTimer>
 #include <QDebug>
 #include <QDate>
 
 #include "LinkInterface.h"
+#include "packet.h"
 
 class SerialLink : public LinkInterface
 {
@@ -18,7 +18,7 @@ class SerialLink : public LinkInterface
 public:
     explicit SerialLink();
     bool connectLink(QString &name);
-    bool disconnect();
+    bool disconnectLink();
     bool isConnect();
 
 signals:
@@ -29,9 +29,8 @@ public slots:
       void writeBytes(const char* data, qint64 length);
 
 private:
-      QSerialPort *mSerialPort;
-      QString portName;
-      bool isOpen;
+      QSerialPort *_port;
+      bool _isOpen;
 };
 
 #endif // SERIALLINK_H

@@ -1,35 +1,32 @@
-#ifndef DIALOG_H
-#define DIALOG_H
-
+#ifndef MAINWINDOW_H
+#define MAINWINDOW_H
+#include <QMainWindow>
 #include <QDialog>
 #include <QSerialPort>
-#include "packet.h"
 #include <QThread>
 #include <QTimer>
-#include "RtkConfig.h"
-#include "SerialLink.h"
 
+#include "packet.h"
+#include "RtkConfig.h"
 
 namespace Ui {
-class Dialog;
+class MainWindow;
 }
+
 class RtkConfig;
-class Dialog : public QDialog
+
+class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    explicit Dialog(QWidget *parent = 0);
-    ~Dialog();
+    explicit MainWindow(QWidget *parent = 0);
+    ~MainWindow();
+
     void getSerialName(QString &name);
-    static Dialog* getInstance();
+    static MainWindow* getInstance();
 
 private slots:
-    void showStatus(QString &status);
-    void showDeviceID(QString &id);
-    void showAcount(QList<QString> &acount);
-    void showProgress(int value);
-
     void on_pushButton_readVersion_clicked();
 
     void on_pushButton_uploadFirmware_clicked();
@@ -42,15 +39,16 @@ private slots:
 
     void on_pushButton_configAcount_clicked();
 
+    void showStatus(QString &status);
+    void showDeviceID(QString &id);
+    void showAcount(QList<QString> &acount);
+    void showProgress(int value);
+    void showConfigDeviceID(void);
 private:
-    Ui::Dialog *ui;
+    Ui::MainWindow *ui;
     RtkConfig *_rtkConfig;
-    static Dialog * _instance;
-    QThread *_thread;
+    static MainWindow * _instance;
     QList<QString> serialPortNameList;
 };
 
-extern Dialog* uploadApp(void);
-
-
-#endif // DIALOG_H
+#endif // MAINWINDOW_H

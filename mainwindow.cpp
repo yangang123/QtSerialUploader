@@ -1,16 +1,17 @@
-#include "dialog.h"
-#include "ui_dialog.h"
+#include "mainwindow.h"
+#include "ui_mainwindow.h"
+
 #include <QSerialPortInfo>
 #include <QDebug>
 #include <QDate>
 #include <QFileDialog>
-#include "packet.h"
+#include <QMessageBox>
 
-Dialog * Dialog::_instance = 0;
+MainWindow * MainWindow::_instance = 0;
 
-Dialog::Dialog(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::Dialog),
+MainWindow::MainWindow(QWidget *parent) :
+    QMainWindow(parent),
+    ui(new Ui::MainWindow),
     _rtkConfig(new RtkConfig)
 {
     ui->setupUi(this);
@@ -21,48 +22,50 @@ Dialog::Dialog(QWidget *parent) :
         serialPortNameList.append(serialPortItemName);
     }
 
-    connect(_rtkConfig, &RtkConfig::sendStatusStr, this, &Dialog::showStatus);
-    connect(_rtkConfig, &RtkConfig::sendDeviceIdStr, this, &Dialog::showDeviceID);
-    connect(_rtkConfig, &RtkConfig::sendAcountStr, this, &Dialog::showAcount);
-    connect(_rtkConfig, &RtkConfig::sendProgressValue, this, &Dialog::showProgress);
+    connect(_rtkConfig, &RtkConfig::sendStatusStr, this, &MainWindow::showStatus);
+    connect(_rtkConfig, &RtkConfig::sendDeviceIdStr, this, &MainWindow::showDeviceID);
+    connect(_rtkConfig, &RtkConfig::sendAcountStr, this, &MainWindow::showAcount);
+    connect(_rtkConfig, &RtkConfig::sendProgressValue, this, &MainWindow::showProgress);
+    connect(_rtkConfig, &RtkConfig::sendConfigDeviceID, this, &MainWindow::showConfigDeviceID);
+
 }
 
-Dialog::~Dialog()
+MainWindow::~MainWindow()
 {
     delete ui;
 }
 
-void Dialog::showProgress(int value)
+void MainWindow::showProgress(int value)
 {
     ui->progressBar_upload->setValue(value);
 }
 
-Dialog* Dialog::getInstance()
+MainWindow* MainWindow::getInstance()
 {
     if (_instance == NULL)  {
-        _instance = new Dialog();
+        _instance = new MainWindow();
     }
     return _instance;
 }
 
-void Dialog::getSerialName(QString &name)
+void MainWindow::getSerialName(QString &name)
 {
     int i = ui->comboBox_serialPort->currentIndex();
     name = serialPortNameList.at(i);
     qDebug() << name;
 }
 
-void Dialog::showStatus(QString &status)
+void MainWindow::showStatus(QString &status)
 {
      ui->label_displayVersion->setText(status);
 }
 
-void Dialog::showDeviceID(QString &id)
+void MainWindow::showDeviceID(QString &id)
 {
      ui->lineEdit_deviceID->setText(id);
 }
 
-void Dialog::showAcount(QList<QString> &acount)
+void MainWindow::showAcount(QList<QString> &acount)
 {
     if (acount.size()>=3 ) {
         ui->lineEdit_acountKey->setText(acount.at(0));
@@ -71,12 +74,17 @@ void Dialog::showAcount(QList<QString> &acount)
     }
 }
 
-void Dialog::on_pushButton_readVersion_clicked()
+void MainWindow::showConfigDeviceID()
+{
+    QMessageBox::information(this, tr("提示"), tr("成功"));
+}
+
+void MainWindow::on_pushButton_readVersion_clicked()
 {
     _rtkConfig->readVersion();
 }
 
-void Dialog::on_pushButton_uploadFirmware_clicked()
+void MainWindow::on_pushButton_uploadFirmware_clicked()
 {
     QFileDialog *fileDialog = new QFileDialog(this);
     if(fileDialog->exec() == QDialog::Accepted) {
@@ -86,23 +94,23 @@ void Dialog::on_pushButton_uploadFirmware_clicked()
     }
 }
 
-void Dialog::on_pushButton_readDeviceID_clicked()
+void MainWindow::on_pushButton_readDeviceID_clicked()
 {
     _rtkConfig->readDeviceId();
 }
 
-void Dialog::on_pushButton_configDeviceID_clicked()
+void MainWindow::on_pushButton_configDeviceID_clicked()
 {
     QString id = ui->lineEdit_deviceID->displayText();
     _rtkConfig->setDeviceID(id);
 }
 
-void Dialog::on_pushButton_readAcount_clicked()
+void MainWindow::on_pushButton_readAcount_clicked()
 {
-     _rtkConfig->readAcount();
+    _rtkConfig->readAcount();
 }
 
-void Dialog::on_pushButton_configAcount_clicked()
+void MainWindow::on_pushButton_configAcount_clicked()
 {
     QString acount;
     acount= ui->lineEdit_acountKey->displayText() + ','
@@ -110,3 +118,4 @@ void Dialog::on_pushButton_configAcount_clicked()
             + ui->lineEdit_acountType->displayText();
    _rtkConfig->setAcount(acount);
 }
+

@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>500</width>
+    <height>464</height>
+   </rect>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>500</width>
+    <height>464</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>串口配置工具</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="res.qrc">
+    <normaloff>:/image/res/MainWindowIcon.png</normaloff>:/image/res/MainWindowIcon.png</iconset>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QPushButton" name="pushButton_readVersion">
+    <property name="geometry">
+     <rect>
+      <x>300</x>
+      <y>100</y>
+      <width>91</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>读取版本号</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_uploadFirmware">
+    <property name="geometry">
+     <rect>
+      <x>400</x>
+      <y>100</y>
+      <width>81</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>升级固件</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_readDeviceID">
+    <property name="geometry">
+     <rect>
+      <x>300</x>
+      <y>210</y>
+      <width>91</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>读取设备ID</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_configDeviceID">
+    <property name="geometry">
+     <rect>
+      <x>400</x>
+      <y>210</y>
+      <width>81</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>配置设备ID</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_readAcount">
+    <property name="geometry">
+     <rect>
+      <x>300</x>
+      <y>380</y>
+      <width>81</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>读取账号信息</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_configAcount">
+    <property name="geometry">
+     <rect>
+      <x>390</x>
+      <y>380</y>
+      <width>91</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>更新账号信息</string>
+    </property>
+   </widget>
+   <widget class="Line" name="line">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>140</y>
+      <width>471</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="Line" name="line_2">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>250</y>
+      <width>471</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QSplitter" name="splitter">
+    <property name="geometry">
+     <rect>
+      <x>70</x>
+      <y>290</y>
+      <width>133</width>
+      <height>60</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Vertical</enum>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEdit_deviceID">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>70</x>
+      <y>170</y>
+      <width>411</width>
+      <height>27</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_9">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>170</y>
+      <width>49</width>
+      <height>29</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>设备ID</string>
+    </property>
+   </widget>
+   <widget class="QSplitter" name="splitter_4">
+    <property name="geometry">
+     <rect>
+      <x>70</x>
+      <y>280</y>
+      <width>411</width>
+      <height>91</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Vertical</enum>
+    </property>
+    <widget class="QLineEdit" name="lineEdit_acountKey">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="lineEdit_acountSecret"/>
+    <widget class="QLineEdit" name="lineEdit_acountType"/>
+   </widget>
+   <widget class="QSplitter" name="splitter_5">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>280</y>
+      <width>51</width>
+      <height>91</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Vertical</enum>
+    </property>
+    <widget class="QLabel" name="label_6">
+     <property name="text">
+      <string>秘钥</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_7">
+     <property name="text">
+      <string>解密</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_8">
+     <property name="text">
+      <string>账号类型</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QSplitter" name="splitter_3">
+    <property name="geometry">
+     <rect>
+      <x>7</x>
+      <y>10</y>
+      <width>81</width>
+      <height>81</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Vertical</enum>
+    </property>
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>端口</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>波特率</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_5">
+     <property name="text">
+      <string>升级进度</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QSplitter" name="splitter_2">
+    <property name="geometry">
+     <rect>
+      <x>70</x>
+      <y>10</y>
+      <width>411</width>
+      <height>81</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Vertical</enum>
+    </property>
+    <widget class="QComboBox" name="comboBox_serialPort"/>
+    <widget class="QComboBox" name="comboBox_serialBaud">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <item>
+      <property name="text">
+       <string>115200</string>
+      </property>
+     </item>
+    </widget>
+    <widget class="QProgressBar" name="progressBar_upload">
+     <property name="value">
+      <number>0</number>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QLabel" name="label_displayVersion">
+    <property name="geometry">
+     <rect>
+      <x>70</x>
+      <y>100</y>
+      <width>41</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_3">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>101</y>
+      <width>51</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>当前版本</string>
+    </property>
+   </widget>
+   <zorder>splitter_4</zorder>
+   <zorder>splitter_5</zorder>
+   <zorder>splitter_3</zorder>
+   <zorder>splitter_2</zorder>
+   <zorder>label_displayVersion</zorder>
+   <zorder>pushButton_readDeviceID</zorder>
+   <zorder>pushButton_configDeviceID</zorder>
+   <zorder>pushButton_readAcount</zorder>
+   <zorder>pushButton_configAcount</zorder>
+   <zorder>line</zorder>
+   <zorder>line_2</zorder>
+   <zorder>splitter</zorder>
+   <zorder>pushButton_uploadFirmware</zorder>
+   <zorder>pushButton_readVersion</zorder>
+   <zorder>lineEdit_deviceID</zorder>
+   <zorder>label_9</zorder>
+   <zorder>label_3</zorder>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>500</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>开始</string>
+    </property>
+    <addaction name="separator"/>
+   </widget>
+   <widget class="QMenu" name="menu_2">
+    <property name="title">
+     <string>帮助</string>
+    </property>
+   </widget>
+   <addaction name="menu"/>
+   <addaction name="menu_2"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionDdd">
+   <property name="text">
+    <string>ddd,</string>
+   </property>
+  </action>
+  <action name="actionDddd">
+   <property name="text">
+    <string>dddd.</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="res.qrc"/>
+ </resources>
+ <connections/>
+</ui>

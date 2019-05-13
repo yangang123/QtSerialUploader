@@ -50,6 +50,10 @@
   <property name="windowTitle">
    <string>无距升级工具</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="res.qrc">
+    <normaloff>:/image/res/MainWindowIcon.png</normaloff>:/image/res/MainWindowIcon.png</iconset>
+  </property>
   <widget class="QLabel" name="label_7">
    <property name="geometry">
     <rect>
@@ -433,6 +437,8 @@
   <zorder>progressBar_upload</zorder>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="res.qrc"/>
+ </resources>
  <connections/>
 </ui>

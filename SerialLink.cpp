@@ -1,25 +1,26 @@
 #include "SerialLink.h"
 
 SerialLink::SerialLink():
-    mSerialPort(new QSerialPort)
+    _port(new QSerialPort),
+    _isOpen(false)
 {
-     QObject::connect(mSerialPort, &QIODevice::readyRead, this, &SerialLink::_readBytes);
+     QObject::connect(_port, &QIODevice::readyRead, this, &SerialLink::_readBytes);
 }
 
 bool SerialLink::connectLink(QString &name)
 {
-    if (isOpen) {
+    if (_isOpen) {
          qDebug() << "port already open";
-         mSerialPort->close();
+         _port->close();
     }
-    mSerialPort->setPortName(name);
-    mSerialPort->setBaudRate(QSerialPort::Baud115200);
-    mSerialPort->setParity(QSerialPort::NoParity);
-    mSerialPort->setStopBits(QSerialPort::OneStop);
+    _port->setPortName(name);
+    _port->setBaudRate(QSerialPort::Baud115200);
+    _port->setParity(QSerialPort::NoParity);
+    _port->setStopBits(QSerialPort::OneStop);
 
-    mSerialPort->open(QSerialPort::ReadWrite);
-    isOpen = mSerialPort->isOpen();
-    if (isOpen) {
+    _port->open(QSerialPort::ReadWrite);
+    _isOpen = _port->isOpen();
+    if (_isOpen) {
         qDebug() << "portName open" << "openDate:" << QDate::currentDate();
         return true;
     }
@@ -27,29 +28,29 @@ bool SerialLink::connectLink(QString &name)
     return false ;
 }
 
-bool SerialLink::disconnect()
+bool SerialLink::disconnectLink()
 {
-    if (isOpen) {
+    if (_isOpen) {
          qDebug() << "portName close";
-         mSerialPort->close();
-         isOpen = false;
+         _port->close();
+         _isOpen = false;
     }
     return true;
 }
 
 bool SerialLink::isConnect()
 {
-    return isOpen;
+    return _isOpen;
 }
 
 void SerialLink::_readBytes(void)
 {
-    if (mSerialPort && mSerialPort->isOpen()) {
-        qint64 byteCount = mSerialPort->bytesAvailable();
+    if (_port && _port->isOpen()) {
+        qint64 byteCount = _port->bytesAvailable();
         if (byteCount) {
             QByteArray buffer;
             buffer.resize(byteCount);
-            mSerialPort->read(buffer.data(), buffer.size());
+            _port->read(buffer.data(), buffer.size());
             emit bytesReceived(this, buffer);
         }
     }
@@ -57,9 +58,9 @@ void SerialLink::_readBytes(void)
 
 void SerialLink::writeBytes(const char* data, qint64 size)
 {
-    if(mSerialPort && mSerialPort->isOpen()) {
-        mSerialPort->write(data, size);
-        mSerialPort->flush();
+    if(_port && _port->isOpen()) {
+        _port->write(data, size);
+        _port->flush();
     }
 }
 
