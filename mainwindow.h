@@ -5,16 +5,18 @@
 #include <QSerialPort>
 #include <QThread>
 #include <QTimer>
+#include <QLoggingCategory>
 
 #include "packet.h"
 #include "RtkConfig.h"
+
+Q_DECLARE_LOGGING_CATEGORY(MainWindowLog)
 
 namespace Ui {
 class MainWindow;
 }
 
 class RtkConfig;
-
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -25,6 +27,7 @@ public:
 
     void getSerialName(QString &name);
     static MainWindow* getInstance();
+
 
 private slots:
     void on_pushButton_readVersion_clicked();
@@ -44,11 +47,15 @@ private slots:
     void showAcount(QList<QString> &acount);
     void showProgress(int value);
     void showConfigDeviceID(void);
+    void autoUpdateLink();
+
+    void on_comboBox_serialPort_currentIndexChanged(int index);
+
 private:
-    Ui::MainWindow *ui;
-    RtkConfig *_rtkConfig;
-    static MainWindow * _instance;
-    QList<QString> serialPortNameList;
+    Ui::MainWindow      *ui;
+    RtkConfig           *_rtkConfig;
+    static MainWindow   * _instance;
+    QTimer              *_update;
 };
 
 #endif // MAINWINDOW_H
